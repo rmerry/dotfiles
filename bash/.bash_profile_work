@@ -1,0 +1,9 @@
+export awsm="$HOME/go/src/github.com/zattoo/awsm"
+export awsmcli="$HOME/dev/zattoo/awsm-cli"
+export bridge="$HOME/dev/zattoo/bridge"
+export streamapi="$HOME/go/src/github.com/zattoo/streamapi"
+export warehouse="$HOME/dev/zattoo/bridge-warehouse"
+export zattoo="$HOME/dev/zattoo"
+export hackdays="$HOME/dev/zattoo/hackdays/project"
+
+alias mgr='ssh richard@mgr.zrh.zattoo.com'
