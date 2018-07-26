@@ -16,7 +16,7 @@ Check out the repository and use GNU Stow to symlink the files/directories to th
 To symlink everything within the `vim` folder to your home directory:
 
 ```
-$ stow vim
+$ stow -t ~ vim
 ```
 
 ### Removing Symlinks
@@ -24,5 +24,5 @@ $ stow vim
 To remove previously created vim symlinks:
 
 ```
-$ stow -D vim
+$ stow -t ~ -D vim
 ```
