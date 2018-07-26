@@ -91,8 +91,11 @@ let g:gruvbox_italic=1
 colorscheme gruvbox
 
 autocmd Filetype set tabstop=2 sts=2 sw=2 et smarttab
-autocmd Filetype markdown set spell wrap linebreak
+autocmd Filetype markdown set spell wrap linebreak textwidth=80
+autocmd Filetype text set spell wrap linebreak textwidth=80
+autocmd BufRead,BufNewFile text setlocal textwidth=80
 autocmd Filetype javascript,ruby set tabstop=2 sts=2 sw=2 et smarttab 
+
 " Remove trailing whitespace
 autocmd FileType c,cpp,go,java,javascript,json,php,python,ruby autocmd BufWritePre <buffer> %s/\s\+$//e 
 

@@ -1,0 +1,10 @@
+set bell-style visible
+set blink-matching-paren on
+set colored-completion-prefix on
+set colored-stats on
+set completion-query-items 200
+set editing-mode emacs
+
+# vi editing-mode options:
+#set show-mode-in-prompt on
+#set vi-ins-mode-string insert

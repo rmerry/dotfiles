@@ -177,3 +177,5 @@ ag() {
 mycoins() {
     coinmon -f xrp,xvg,bcn,xem,miota,xtz    
 }
+
+task list
