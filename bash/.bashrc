@@ -4,6 +4,13 @@ case $- in
     *) return;;
 esac
 
+export BUILD_TOOLS_PATH="$HOME/dev/fmts/cid_resources/build_tools"
+export INSTALL_PATH=/usr/local
+export LD_LIBRARY_PATH=.:$INSTALL_PATH/lib:/usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=$LD_LIBRARY_PATH
+export FMTS_INSTALL_ROOT=/usr/local
+export SUDO_ASKPASS=${HOME}/bin/pw.sh
+
 ########################
 #   Global Variables   #
 ########################
@@ -19,22 +26,45 @@ COLOUR_WHITE="\e[1;37m"
 COLOUR_YELLOW="\e[0;33m"
 
 export TERM="xterm-256color"
+[[ $TMUX = "" ]] && export TERM="xterm-256color"
 
 ########################
 # Function Definitions #
 ########################
 
+exitCode() {
+    exit_code="$?"
+
+    if [[ "$exit_code" -ne "0" ]]; then
+        echo -e "${COLOUR_RED}\e[3m${exit_code}!\e[0m "
+    fi
+}
+
+jobCount() {
+    job_count="$(jobs -l | wc -l)"
+    echo -n "$job_count"
+}
+
 # Get the git branch name
 gitBranchName() {
-    branch_name="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/')"
+    branch_name="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/')"
 
     if [[ -n $branch_name ]]; then
-        echo -n $branch_name
+        status="$(git status 2> /dev/null)"
+
+        # Set color based on clean/staged/dirty.
+        if [[ ${status} =~ "working directory clean" ]]; then
+            echo -n " $branch_name"
+        elif [[ ${status} =~ "Changes to be committed" ]]; then
+            echo -n " ${branch_name}*"
+        else
+            echo -n " $branch_name"
+        fi
     fi
 }
 
 gitBranchColour() {
-    branch_name="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/')"
+    branch_name="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/')"
 
     if [[ -n $branch_name ]]; then
 
@@ -42,11 +72,11 @@ gitBranchColour() {
 
         # Set color based on clean/staged/dirty.
         if [[ ${status} =~ "working directory clean" ]]; then
-            strcolour=$COLOUR_GREEN
+            strcolour=$COLOUR_WHITE
         elif [[ ${status} =~ "Changes to be committed" ]]; then
-            strcolour=$COLOUR_LIGHT_RED
+            strcolour=$COLOUR_WHITE
         else
-            strcolour=$COLOUR_YELLOW
+            strcolour=$COLOUR_WHITE
         fi
 
         echo -e -n $strcolour
@@ -55,39 +85,18 @@ gitBranchColour() {
     fi
 }
 
-inspireMe() {
-    local quote=$(((RANDOM % 5) + 1))
-
-    case $quote in
-    1)
-        echo -e "\e[03m \"an investment in knowledge always pays the best interest\"\e[23m [Benjamin Franklin]"
-        ;;
-    2)
-        echo -e "\e[03m \"I know not with what weapons World War III will be fought, but World War IV"
-        echo -e " will be fought with sticks and stones\"\e[23m [Albert Einstein]"
-        ;;
-    3)
-        echo -e "\e[03m \"the way to get started is to quit talking and begin doing\"\e[23m [Walt Disney]"
-        ;;
-    4)
-        echo -e "\e[03m \"the way to get started is to quit talking and begin doing\"\e[23m [Walt Disney]"
-        ;;
-    5)
-        echo -e "\e[03m \"things may come to those who wait. But only the"
-        echo -e " things left by those who hustle\"\e[23m [Abraham Lincoln]"
-        ;;
-    esac
-
-    echo ""
-}
-
 ########################
 #     Core Config      #
 ########################
 
-HISTCONTROL=ignoreboth # No duplicates of lines ending in a space (in the history file)
-HISTSIZE=1000000
-HISTFILESIZE=$HISTSIZE
+# Avoid duplicates
+export HISTCONTROL=ignoredups:erasedups
+export HISTSIZE=1000000
+export HISTFILESIZE=$HISTSIZE
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+
+# When the shell exits, append to the history file instead of overwriting it
+shopt -s histappend
 
 export EDITOR=vim
 
@@ -109,10 +118,11 @@ rxvt*|xterm*|*-256color)
     # PS1="\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$(gitBranchName) \$ "
     #
     # Had lots of problems with incorporating the git branch name; the important point is
-    # to wrap the variables in \[ \] blocks -- this tells bash that this is a non text 
+    # to wrap the variables in \[ \] blocks -- this tells bash that this is a non text
     # entry and therefore it will not count the string in the columns & rows calculation
-    PS1="\[\e[01;34m\]\w \[\$(gitBranchColour)\]\$(gitBranchName)\[\e[0m\] \$ "
+    # PS1="\[\e[01;34m\]\w \[\$(gitBranchColour)\]\$(gitBranchName)\[\e[0m\] \n\$ "
     # PS1='\[\e[01;32m\]\u\[\e[0m\]:\[\e[01;34m\]\w\[\e[0m\] \[\$(gitBranchName)\]\[\e[0m\] \$ '
+    PS1="\n\[\e[32m\]\w\[\$(gitBranchColour)\]\$(gitBranchName) \[\e[0m\] \n\[\e[90m\]» \[\e[39m\]"
     ;;
 *)
     PS1="\w\[$txtcyn\]\$(gitBranchName) \$ "
@@ -133,6 +143,9 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias vi='vim'
+alias open='xdg-open'
+
+alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
 
 # Enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -160,6 +173,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
+
 if ! shopt -oq posix; then
     if [ -f /usr/share/bash-completion/bash_completion ]; then
         . /usr/share/bash-completion/bash_completion
@@ -170,12 +184,11 @@ fi
 
 bind '"\C-g":"git commit -m \"\"\e[D'
 
-ag() { 
-    $(which ag) --ignore tags "$@"; 
+ag() {
+    $(which ag) --ignore tags "$@";
 }
 
-mycoins() {
-    coinmon -f xrp,xvg,bcn,xem,miota,xtz    
-}
+# Prevent ctrl+s/ctrl+q behaviour
+stty -ixon
 
-task list
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

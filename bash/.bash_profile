@@ -26,30 +26,29 @@ alias ytdl-audio="youtube-dl \
 alias lisp="clisp"
 alias emacs="emacs -nw"
 
-
-
 ########################
 #        Paths         #
 ########################
 
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/jvm/jdk-11.0.2/bin:/opt/apache-maven-3.6.0/bin"
 # export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-export PATH="/usr/java/jre1.8.0_92/bin:$PATH" # Add JRE to PATH
+# export PATH="/usr/java/jre1.8.0_92/bin:$PATH" # Add JRE to PATH
 export PATH="$HOME/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/bin:$PATH"
 export PATH=~/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/bin:$PATH
 
-export JAVA_HOME=/usr/java/jre1.8.0_92/bin
-
-export VIMRUNTIME=/usr/local/share/vim/vim81
+# export VIMRUNTIME=/usr/share/vim/vim80
 
 # export PATH="$HOME/.rbenv/bin:$PATH"
+JAVA_HOME="/usr/lib/jvm/jdk-11.0.2"
+M2_HOME="/opt/apache-maven-3.6.0"
 
 # Golang specific configuration
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
-# export GOPATH="$HOME/go"
+export GOPATH="$HOME/go"
 # export GOROOT=/usr/local/go
 
-# Load rbenv automatically 
+# Load rbenv automatically
 export PATH="$HOME/.rbenv/bin:$PATH"
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 

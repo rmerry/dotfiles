@@ -1,3 +1,4 @@
+# Zattoo
 export awsm="$HOME/go/src/github.com/zattoo/awsm"
 export awsmcli="$HOME/dev/zattoo/awsm-cli"
 export bridge="$HOME/dev/zattoo/bridge"
@@ -5,5 +6,106 @@ export streamapi="$HOME/go/src/github.com/zattoo/streamapi"
 export warehouse="$HOME/dev/zattoo/bridge-warehouse"
 export zattoo="$HOME/dev/zattoo"
 export hackdays="$HOME/dev/zattoo/hackdays/project"
-
 alias mgr='ssh richard@mgr.zrh.zattoo.com'
+
+# FMTS
+export fmts="$HOME/dev/fmts"
+export tws="$HOME/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice"
+export trustedwatermarkservice="$HOME/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice"
+export gwatermark="$HOME/go/src/gitlab.fmts.int/content-id/gwatermark"
+
+export BUILD_TOOLS_PATH="$HOME/dev/fmts/cid_resources/build_tools"
+export INSTALL_PATH=/usr/local
+export LD_LIBRARY_PATH=.:$INSTALL_PATH/lib:/usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=$LD_LIBRARY_PATH
+
+alias fvpn='sudo openvpn --config ~/.openvpn/client.ovpn --auth-retry interact'
+alias zvpn_birmingham='sudo openvpn --config ~/.openvpn/client_birmingham.ovpn --auth-retry interact'
+
+alias wscurl='curl --cacert ~/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice/certificates/ca.crt \
+    --key ~/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice/certificates/client.key \
+    --cert ~/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice/certificates/client.crt $@'
+
+alias wsintcurl='curl --cacert ~/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice/integration/certificates/ca.crt \
+    --key ~/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice/integration/certificates/client.key \
+    --cert ~/go/src/gitlab.fmts.int/content-id/trustedwatermarkservice/integration/certificates/client.crt $@'
+
+function awslogin() {
+    if [ -z "$1" ]; then
+        echo "USAGE: awslogin <2fa_code>"
+        return -1
+    fi
+
+    local output
+    if ! output=$(aws sts get-session-token --serial-number arn:aws:iam::687557713498:mfa/rmerry --token-code $1); then
+        echo $output
+        return 1
+    fi
+
+    # $output format:
+    #   CREDENTIALS <access_key> <expiry_date> <secret_key> <session_token>
+
+    local accessKey=$(echo $output | cut -d " " -f 2)
+    local expiry_date=$(echo $output | cut -d " " -f 3)
+    local secretKey=$(echo $output | cut -d " " -f 4)
+    local sessionToken=$(echo $output | cut -d " " -f 5)
+
+    export AWS_ACCESS_KEY_ID=$accessKey
+    export AWS_SECRET_ACCESS_KEY=$secretKey
+    export AWS_SESSION_TOKEN=$sessionToken
+
+    echo "Login successful, session will expire on $expiry_date"
+}
+
+function awslogin() {
+    if [ -z "$1" ]; then
+        echo "USAGE: awslogin <2fa_code>"
+        return -1
+    fi
+
+    local output
+    if ! output=$(aws sts get-session-token --serial-number arn:aws:iam::687557713498:mfa/rmerry --token-code $1); then
+        echo $output
+        return 1
+    fi
+
+    # $output format:
+    #   CREDENTIALS <access_key> <expiry_date> <secret_key> <session_token>
+
+    local accessKey=$(echo $output | cut -d " " -f 2)
+    local expiry_date=$(echo $output | cut -d " " -f 3)
+    local secretKey=$(echo $output | cut -d " " -f 4)
+    local sessionToken=$(echo $output | cut -d " " -f 5)
+
+    export AWS_ACCESS_KEY_ID=$accessKey
+    export AWS_SECRET_ACCESS_KEY=$secretKey
+    export AWS_SESSION_TOKEN=$sessionToken
+
+    echo "Login successful, session will expire on $expiry_date"
+}
+
+
+function awslogindefault() {
+    local output
+    if ! output=$(aws sts get-session-token); then
+        echo $output
+        return 1
+    fi
+
+    # $output format:
+    #   CREDENTIALS <access_key> <expiry_date> <secret_key> <session_token>
+
+    local accessKey=$(echo $output | cut -d " " -f 2)
+    local expiry_date=$(echo $output | cut -d " " -f 3)
+    local secretKey=$(echo $output | cut -d " " -f 4)
+    local sessionToken=$(echo $output | cut -d " " -f 5)
+
+    export AWS_ACCESS_KEY_ID=$accessKey
+    export AWS_SECRET_ACCESS_KEY=$secretKey
+    export AWS_SESSION_TOKEN=$sessionToken
+
+    echo "Login successful, session will expire on $expiry_date"
+}
+    export AWS_ACCESS_KEY_ID=AKIAIIKPXGZAHHR6KKRQ
+    export AWS_SECRET_ACCESS_KEY=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
+    export AWS_DEFAULT_REGION=eu-west-1
