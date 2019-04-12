@@ -1,117 +1,178 @@
 filetype off
 
-set bs=2            " Backspace not working on windows
+" PLUGINS
+call plug#begin('~/.vim/plugged')
+  " For this I use the vim-plug plugin manager (https://github.com/jwhitley/vim-plug)
+  "
+  " To install run:
+  "   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  "       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  "
+  Plug 'fatih/vim-go'                       " Golang
+  Plug 'godlygeek/tabular'                  " text tabularisation
+  Plug 'google/vim-searchindex'             " display search pattern index
+  Plug 'hashivim/vim-terraform'
+  Plug 'jelera/vim-javascript-syntax'
+  Plug 'junegunn/vim-easy-align'            " Aligning markdown tables
+  Plug 'kien/ctrlp.vim'                     " fuzzy file finder
+  Plug 'mileszs/ack.vim'
+  Plug 'moll/vim-node'
+  Plug 'morhetz/gruvbox'
+  " Plug 'natebosch/vim-lsc'                  " vim language server client
+  Plug 'pangloss/vim-javascript'
+  Plug 'severin-lemaignan/vim-minimap'
+  Plug 'shime/vim-livedown', { 'do': 'sudo npm install -g livedown' }
+  Plug 'shumphrey/fugitive-gitlab.vim'
+  Plug 'thoughtbot/vim-rspec'
+  Plug 'tpope/vim-commentary'               " comment out text
+  Plug 'tpope/vim-cucumber'
+  Plug 'tpope/vim-fugitive'                 " git integration
+  Plug 'tpope/vim-rails'
+  Plug 'tpope/vim-vinegar'                  " enhances netrw
+  Plug 'vim-ruby/vim-ruby'
+  " Plug 'w0rp/ale'                           " linter integration
+  Plug 'owickstrom/vim-colors-paramount'
+  " Plug 'plan9-for-vimspace/acme-colors'
+  Plug 'olivertaylor/vacme'
+  Plug 'fxn/vim-monochrome'
+  Plug 'robertmeta/nofrils'
+  Plug 'pbrisbin/vim-colors-off'
+  Plug 'pbrisbin/vim-colors-off'
+  Plug 'KKPMW/distilled-vim'
+  Plug 'JaySandhu/xcode-vim'
+  Plug 'rakr/vim-two-firewatch'
+  Plug 'romainl/Apprentice'
+  Plug 'gergap/wombat256'
+  Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install() }}
+call plug#end()
+
+" GENERAL CONFIGURATION OPTIONS
+set history=1000            " command history size
+set bs=2                    " Backspace not working on windows
 set colorcolumn=120
-set helpheight=100  " full screen help
-set hidden          " don't ask to save when changing buffers (i.e. when jumping to a type definition)
+set helpheight=100          " full screen help
+set hidden                  " don't ask to save when changing buffers (i.e. when jumping to a type definition)
+set nocompatible            " force not to run like vi (that's "vee-eye" people!)
+set path+=**                " `:find' will work up to 30 sub directories deep
+set showcmd                 " show commands as being typed at bottom of screen
+set showmatch               " show matching parenthesis
+set showmode                " show current mode at bottom of buffer window
+set autoread                " automatically reread file if unmodified in vim
+set ttyfast
+set lazyredraw
+set wildignore=*.o,*.obj,*/node_modules/*,*/go/**/vendor/*,tags
+set completeopt=longest,menuone
+
+" USER INTERFACE OPTIONS
+colorscheme gruvbox
+let g:gruvbox_contrast_dark="hard"
+let g:gruvbox_italicize_strings=0
+" let g:gruvbox_improved_strings=1
+
+set background=dark
+set cursorline                " highlight line currently under cursor
+set guioptions-=L             " no left-hand scroll bar in gVim
+set guioptions-=T             " no toolbar in gVim
+set guioptions-=m             " no menu bar in gVim
+set guioptions-=r             " no right-hand scroll bar in gVim
+set laststatus=2              " always display statusbar
+set mouse=a                   " mouse Support In Terminal
+set number                    " line numbers on
+set relativenumber            " relative line numbers on
+set ruler                     " always show cursor position
+set t_8b=[48;2;%lu;%lu;%lum " make true colours work for Vim inside Tmux
+set t_8f=[38;2;%lu;%lu;%lum " make true colours work for Vim inside Tmux
+" set t_Co=256
+set t_ut=                     " use the currect background colour
+set termguicolors
+set title                     " window title reflects name of current file
+set wildmenu                  " show possible tab completion matches in menu above status bar
+
+" SWAP, BACKUP AND UNDO OPTIONS
+set directory=$HOME/.vim/swp//
+set backupdir=$HOME/.vim/backup//
+set undodir=$HOME/.vim/undo//
+set undofile
+set writebackup
+
+" TEXT RENDERING OPTIONS
+set encoding=utf-8
+set linebreak           " avoid wrapping lines in middle of words
+set scrolloff=3         " number of lines to keep above and below the cursor
+set sidescrolloff=5     " number of columns to keep to the left and right of cursor
+syntax off
+
+" SEARCH OPTIONS
 set hlsearch        " highlight search matches, turn this off temporarily with :noh
 set ignorecase      " ignore case when searching
 set incsearch       " show search matches as you type
-set laststatus=2    " always display statusbar
-set mouse=a         " mouse Support In Terminal
-set nocompatible    " force not to run like vi (that's "vee-eye" people!)
-set noswapfile
-set nowrap
-set number          " line numbers on
-set path+=**        " `:find' will work up to 30 sub directories deep
-set relativenumber
-set showcmd
-set showmatch       " show matching parenthesis
 set smartcase       " don't ignore case if search is not all lowercase
-set ttyfast
-set wildignore=*.o,*.obj,*/node_modules/*,*/go/**/vendor/*,tags
-set wildmenu        " show possible tab completion matches in menu above status bar
-set completeopt=longest,menuone
 
-" tab settings
-set autoindent
-set expandtab         " turn tabs into spaces
-set shiftwidth=2      " number of spaces for each step of (auto)indent
-set smartindent
-set softtabstop=2     " number of spaces tab 'counts for' when editing
-set tabstop=2         " number of spaces tab 'counts for' in the file
+" INDENTATION OPTIONS
+filetype plugin indent on     " smart auto indentation (instead of older `smartindent`
+set autoindent                " new lines inherit indentation of older lines
+set expandtab                 " turn tabs into spaces
+set nowrap
+set shiftwidth=2              " number of spaces for each step of (auto)indent
+set softtabstop=2             " number of spaces tab 'counts for' when editing
+set tabstop=2                 " show tabs as this many spaces
 
-" folds settings
+" FOLD OPTIONS
 set foldlevel=1
 set foldmethod=indent
 
-" colour settings
-set background=dark
-" set t_Co=256
-set termguicolors
-set t_ut=   " use the currect background colour
+set spell spelllang=en_gb
+set nospell
 
-" make true colours work for Vim inside Tmux
-set t_8b=[48;2;%lu;%lu;%lum
-set t_8f=[38;2;%lu;%lu;%lum
-
-" gVim chrome settings
-set guioptions-=m " menu bar
-set guioptions-=T " toolbar
-set guioptions-=r " right-hand scroll bar
-set guioptions-=L " left-hand scroll bar
-
-" Plugin Installations
-" For this I use the vim-plug plugin manager (https://github.com/jwhitley/vim-plug)
-" To install run:
-"   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-"       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"
-call plug#begin('~/.vim/plugged')
-  " Colour schemes
-  Plug 'morhetz/gruvbox'
-  " Cucumber
-  Plug 'tpope/vim-cucumber'
-  " Golang
-  Plug 'fatih/vim-go'
-  " Javascript
-  Plug 'jelera/vim-javascript-syntax'
-  Plug 'moll/vim-node'
-  Plug 'pangloss/vim-javascript'
-  " Markdown
-  Plug 'shime/vim-livedown', { 'do': 'sudo npm install -g livedown' }
-  " Ruby
-  Plug 'tpope/vim-rails'
-  Plug 'vim-ruby/vim-ruby'
-  Plug 'thoughtbot/vim-rspec'
-  " Utilities
-  Plug 'godlygeek/tabular' " text tabularisation
-  Plug 'google/vim-searchindex' " display search pattern index
-  Plug 'kien/ctrlp.vim' " fuzzy file finder
-  Plug 'natebosch/vim-lsc' " vim language server client
-  Plug 'tpope/vim-commentary' " comment out text
-  Plug 'tpope/vim-fugitive' " git integration
-  Plug 'vim-airline/vim-airline'
-  Plug 'vim-airline/vim-airline-themes'
-  Plug 'tpope/vim-vinegar' " enhances netrw
-  Plug 'w0rp/ale' " linter integration
-call plug#end()
-
-let g:gruvbox_italic=1
-colorscheme gruvbox
+" underline and highlight spelling mistakes red
+autocmd ColorScheme * hi clear SpellBad
+    \| hi SpellBad cterm=underline,bold ctermfg=white ctermbg=black
 
 autocmd Filetype set tabstop=2 sts=2 sw=2 et smarttab
-autocmd Filetype markdown set spell wrap linebreak textwidth=80
-autocmd Filetype text set spell wrap linebreak textwidth=80
+autocmd BufNewFile,BufRead *.txt set spell wrap linebreak textwidth=80
 autocmd BufRead,BufNewFile text setlocal textwidth=80
-autocmd Filetype javascript,ruby set tabstop=2 sts=2 sw=2 et smarttab 
+autocmd Filetype javascript,ruby set tabstop=2 sts=2 sw=2 et smarttab
 
 " Remove trailing whitespace
-autocmd FileType c,cpp,go,java,javascript,json,php,python,ruby autocmd BufWritePre <buffer> %s/\s\+$//e 
+autocmd FileType c,cpp,go,java,javascript,json,markdown,php,python,ruby autocmd BufWritePre <buffer> %s/\s\+$//e
+
+" Open Quickfix window automatically after running :make
+augroup OpenQuickfixWindowAfterMake
+  autocmd QuickFixCmdPost [^l]* nested cwindow
+  autocmd QuickFixCmdPost    l* nested lwindow
+augroup END
+
+augroup Go
+  autocmd FileType go vmap <Leader>gi :GoImports<Enter>
+  " autocmd FileType go autocmd BufWritePre <buffer> :GoImports
+
+augroup END
 
 augroup FiletypeGroup
   au BufNewFile,BufRead *.es6 set filetype=javascript
   au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
 augroup END
 
+augroup MarkDown
+  " Align GitHub-flavored Markdown tables
+  autocmd FileType markdown vmap <Leader><Bslash> :EasyAlign*<Bar><Enter>
+  autocmd Filetype markdown set spell wrap linebreak textwidth=80
+augroup END
+
+augroup Terraform
+  let g:terraform_align=1
+  let g:terraform_fmt_on_save=1
+  let g:terraform_fold_sections=1
+augroup END
+
 " Omnifuncs
-augroup omnifuncs
-  autocmd!
-  autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-  autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-  " autocmd FileType javascript setlocal omnifunc=jscomplete#CompleteJS
-  autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-augroup end
+" augroup omnifuncs
+"   autocmd!
+"   autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+"   autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+"   " autocmd FileType javascript setlocal omnifunc=jscomplete#CompleteJS
+"   autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+" augroup end
 
 " Terminal Settings (see termcap_options) {{{
 " }}}
@@ -132,15 +193,20 @@ nnoremap [L :lfirst<CR>
 nnoremap ]L :llast<CR>
 nnoremap ]l :lnext<CR>
 nnoremap [l :lprevious<CR>
+
 " For vimgrep
 nnoremap <leader>gw :vimgrep /<C-R><C-W>/gj **<CR>:botright cwindow<CR>
 nnoremap <leader>gW :vimgrep /<C-R><C-A>/gj **<CR>:botright cwindow<CR>
-map <F4> :execute " grep -srnw --binary-files=without-match --exclude-dir=.git . -e " . expand("<cword>") . " " <bar> cwindow<CR>
+
+map <F4> :execute "vimgrep /" . expand("<cword>") . "/gj **/.* **" <Bar> cw<CR>
+
 " Enhanced editing facilities
 nnoremap ds% %x``x          " Remove surrounding {[( objects
 nnoremap ds" di"hPl2x       " Remove surrounding double quote
 
 nnoremap <leader><c-p> :CtrlPMRUFiles<CR>
+
+nnoremap <leader>a :Ack! ''<left>
 
 " autocompletion menu
 "
@@ -153,12 +219,6 @@ nnoremap <leader><c-p> :CtrlPMRUFiles<CR>
 
 " Plugin Configurations {{{
 
-" Airline {{{
-"let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1 
-let g:airline_theme='gruvbox'
-" }}}
-
 " CtrlP {{{
 "  'c' - the directory of the current file.
 "  'r' - the nearest ancestor that contains one of these directories or files: .git .hg .svn .bzr
@@ -168,7 +228,7 @@ let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:40,results:40'
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|\.git'
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|\.git/'
 let g:ctrlp_show_hidden = 1
 
 " }}}
@@ -188,13 +248,10 @@ let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_loc_list_height = 3
 let g:syntastic_ruby_checkers = ['rubocop']
 
+let g:fugitive_gitlab_domains = ['https://gitlab.fmts.int']
+
 " ShellCheck {{{
 autocmd Filetype sh set makeprg=shellcheck\ -f\ gcc\ % tabstop=4 sts=4 sw=4 et smarttab
-
-" Syntactic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
 
 augroup programming_language_specific_configuration
   autocmd FileType go call SetGoOptions()
@@ -204,7 +261,7 @@ augroup programming_language_specific_configuration
   function! SetGoOptions()
     nnoremap <F2> :GoRename<CR>
     nnoremap <leader>ge :GoErrCheck<CR>
-    nnoremap <leader>gi :GoImport 
+    nnoremap <leader>gi :GoImport
   endfunction
 
   function! SetJavascriptOptions()
@@ -232,10 +289,8 @@ autocmd BufReadPre *.js let b:javascript_lib_use_jasmine = 1
 autocmd BufReadPre *.js let b:javascript_lib_use_react = 0
 autocmd BufReadPre *.js set suffixesadd+=.js
 
-let &runtimepath.=',~/.vim/bundle/ale'
+" let &runtimepath.=',~/.vim/bundle/ale'
 
-filetype plugin indent on
-syntax on
 
 command! PrettifyJSON %!python -m json.tool
 if has("mouse_sgr")
@@ -247,11 +302,10 @@ end
 function! SetupEnvironment()
   let l:path = expand('%:p')
   if l:path =~ 'zattoo'
-    autocmd Filetype javascript set tabstop=4 sts=4 sw=4 et smarttab 
+    autocmd Filetype javascript set tabstop=4 sts=4 sw=4 et smarttab
   endif
 endfunction
 autocmd! BufReadPost,BufNewFile * call SetupEnvironment()
-
 
 " Cscope integrations
 "
@@ -329,4 +383,24 @@ let g:lsc_auto_map = {
     \ 'Completion': 'completefunc',
     \}
 
+" STATUS LINE
+function! StatuslineGit()
+  let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+  return strlen(l:branchname) > 0 ? printf('[%s]', l:branchname) : ''
+endfunction
 
+" Function: display errors from Ale in statusline
+function! LinterStatus() abort
+  " let l:counts = ale#statusline#Count(bufnr(''))
+  " let l:all_errors = l:counts.error + l:counts.style_error
+  " let l:all_non_errors = l:counts.total - l:all_errors
+  " return l:counts.total == 0 ? '' : printf(
+  "       \ 'W:%d E:%d',
+  "       \ l:all_non_errors,
+  "       \ l:all_errors
+  "       \)
+endfunction
+
+let &statusline='%<%t%m%r %y%=%{LinterStatus()}%14.{StatuslineGit()}%14.(%l,%c%V %p%)'
+highlight ColorColumn ctermbg=white
+syntax on
