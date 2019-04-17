@@ -31,8 +31,6 @@ alias emacs="emacs -nw"
 ########################
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/jvm/jdk-11.0.2/bin:/opt/apache-maven-3.6.0/bin"
-# export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-# export PATH="/usr/java/jre1.8.0_92/bin:$PATH" # Add JRE to PATH
 export PATH="$HOME/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/bin:$PATH"
 export PATH=~/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/bin:$PATH
 
@@ -48,6 +46,9 @@ export PATH=$PATH:$HOME/go/bin
 export GOPATH="$HOME/go"
 # export GOROOT=/usr/local/go
 
+# personal bin files
+export PATH=$PATH:$HOME/.bin
+
 # Load rbenv automatically
 export PATH="$HOME/.rbenv/bin:$PATH"
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
@@ -56,10 +57,11 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 #     Load Scripts     #
 ########################
 
-if [[ -s $HOME/.bash_profile_work ]]; then
-    source $HOME/.bash_profile_work
-fi
-
 if [[ -s $HOME/.bashrc ]]; then
     source $HOME/.bashrc
 fi
+
+# ecobee
+alias vpn='sudo openvpn --config ~/.openvpn/config/ecobee.ovpn --auth-retry interact'
+export arthur=/home/richard/dev/ecobee/arthur
+export theia_go=/home/richard/go/src/github.com/ecobee/theia-go
