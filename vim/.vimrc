@@ -44,6 +44,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'romainl/Apprentice'
   Plug 'gergap/wombat256'
   Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install() }}
+  Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+  Plug 'editorconfig/editorconfig-vim'
 call plug#end()
 
 " GENERAL CONFIGURATION OPTIONS
@@ -77,6 +79,7 @@ set guioptions-=m             " no menu bar in gVim
 set guioptions-=r             " no right-hand scroll bar in gVim
 set laststatus=2              " always display statusbar
 set mouse=a                   " mouse Support In Terminal
+set ttymouse=xterm2
 set number                    " line numbers on
 set relativenumber            " relative line numbers on
 set ruler                     " always show cursor position
@@ -124,6 +127,12 @@ set foldmethod=indent
 set spell spelllang=en_gb
 set nospell
 
+" Editor Config Plugin
+
+" * To ensure that this plugin works well with Tim Pope's fugitive
+" * If you wanted to avoid loading EditorConfig for any remote files over ssh:
+let g:EditorConfig_exclude_patterns = ['fugitive://.\*', 'scp://.\*']
+
 " underline and highlight spelling mistakes red
 autocmd ColorScheme * hi clear SpellBad
     \| hi SpellBad cterm=underline,bold ctermfg=white ctermbg=black
@@ -131,10 +140,6 @@ autocmd ColorScheme * hi clear SpellBad
 autocmd Filetype set tabstop=2 sts=2 sw=2 et smarttab
 autocmd BufNewFile,BufRead *.txt set spell wrap linebreak textwidth=80
 autocmd BufRead,BufNewFile text setlocal textwidth=80
-autocmd Filetype javascript,ruby set tabstop=2 sts=2 sw=2 et smarttab
-
-" Remove trailing whitespace
-autocmd FileType c,cpp,go,java,javascript,json,markdown,php,python,ruby autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Open Quickfix window automatically after running :make
 augroup OpenQuickfixWindowAfterMake
@@ -145,7 +150,6 @@ augroup END
 augroup Go
   autocmd FileType go vmap <Leader>gi :GoImports<Enter>
   " autocmd FileType go autocmd BufWritePre <buffer> :GoImports
-
 augroup END
 
 augroup FiletypeGroup
@@ -291,21 +295,7 @@ autocmd BufReadPre *.js set suffixesadd+=.js
 
 " let &runtimepath.=',~/.vim/bundle/ale'
 
-
 command! PrettifyJSON %!python -m json.tool
-if has("mouse_sgr")
-  set ttymouse=sgr
-else
-  set ttymouse=xterm2
-end
-
-function! SetupEnvironment()
-  let l:path = expand('%:p')
-  if l:path =~ 'zattoo'
-    autocmd Filetype javascript set tabstop=4 sts=4 sw=4 et smarttab
-  endif
-endfunction
-autocmd! BufReadPost,BufNewFile * call SetupEnvironment()
 
 " Cscope integrations
 "
