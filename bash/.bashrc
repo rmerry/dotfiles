@@ -4,13 +4,6 @@ case $- in
     *) return;;
 esac
 
-export BUILD_TOOLS_PATH="$HOME/dev/fmts/cid_resources/build_tools"
-export INSTALL_PATH=/usr/local
-export LD_LIBRARY_PATH=.:$INSTALL_PATH/lib:/usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
-export LIBRARY_PATH=$LD_LIBRARY_PATH
-export FMTS_INSTALL_ROOT=/usr/local
-export SUDO_ASKPASS=${HOME}/bin/pw.sh
-
 ########################
 #   Global Variables   #
 ########################
@@ -32,62 +25,56 @@ export TERM="xterm-256color"
 # Function Definitions #
 ########################
 
-exitCode() {
-    exit_code="$?"
+ag() {
+    $(which ag) --ignore tags "$@";
+}
 
-    if [[ "$exit_code" -ne "0" ]]; then
+exitCode() {
+    local exit_code="$?"
+
+    if [ "$exit_code" -ne "0" ]; then
         echo -e "${COLOUR_RED}\e[3m${exit_code}!\e[0m "
     fi
 }
 
-jobCount() {
-    job_count="$(jobs -l | wc -l)"
-    echo -n "$job_count"
-}
-
 # Get the git branch name
 gitBranchName() {
-    branch_name="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/')"
-
-    if [[ -n $branch_name ]]; then
-        status="$(git status 2> /dev/null)"
-
+    local status=$(git status 2> /dev/null)
+    local branch_name_line="$(echo $status | head -n 1)"
+    local branch_name="$(echo $branch_name_line | cut -d ' ' -f 3)"
+    if [[ "$branch_name_line" =~ (^HEAD detached at) ]]; then
+      echo -en " ${COLOUR_RED}[HEAD DETACHED]"
+    elif [[ "$branch_name_line" =~ (^rebase in progress) ]]; then
+      echo -en " ${COLOUR_RED}[REBASE IN PROGRESS]"
+    elif [ -n $branch_name ]; then
         # Set color based on clean/staged/dirty.
-        if [[ ${status} =~ "working directory clean" ]]; then
-            echo -n " $branch_name"
-        elif [[ ${status} =~ "Changes to be committed" ]]; then
-            echo -n " ${branch_name}*"
-        else
-            echo -n " $branch_name"
+        if [[ "${status}" =~ (tree clean) ]]; then
+            echo -en " ${branch_name}${COLOUR_GREEN}◼"
+          elif [[ "${status}" =~ (Changes (to be committed|not staged)) ]]; then
+            echo -en " ${branch_name}${COLOUR_RED}◼"
+        elif [[ "${status}" =~ (Untracked files) ]]; then
+            echo -en " ${branch_name}${COLOUR_YELLOW}◼"
         fi
     fi
 }
 
-gitBranchColour() {
-    branch_name="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/')"
-
-    if [[ -n $branch_name ]]; then
-
-        status="$(git status 2> /dev/null)"
-
-        # Set color based on clean/staged/dirty.
-        if [[ ${status} =~ "working directory clean" ]]; then
-            strcolour=$COLOUR_WHITE
-        elif [[ ${status} =~ "Changes to be committed" ]]; then
-            strcolour=$COLOUR_WHITE
-        else
-            strcolour=$COLOUR_WHITE
-        fi
-
-        echo -e -n $strcolour
-    else
-        printf ''
-    fi
+gag() {
+  if [ "$#" -lt "1" ]; then
+    echo "Usage: gag [OPTIONS] REGEX"
+    return -1
+    elif [ "$#" -eq "1" ]; then
+      git grep "$1" $(git rev-list --all)
+    elif [ "$#" -gt "1" ]; then
+      echo not implemented yet
+    # implement this
+  fi
 }
 
 ########################
 #     Core Config      #
 ########################
+
+export EDITOR=vim
 
 # Avoid duplicates
 export HISTCONTROL=ignoredups:erasedups
@@ -97,9 +84,6 @@ export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; histor
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
-
-export EDITOR=vim
-
 shopt -s cdable_vars  # `cd` will search for exported variables if path not found
 shopt -s cdspell      # Make minor corrections to misspellings of directories when using `cd`
 shopt -s checkwinsize # Check the win size after each command and update the values of LINES and COLUMNS
@@ -107,7 +91,7 @@ shopt -s cmdhist      # Store multiline commands as a single history file entry
 shopt -s dirspell     # Make minor corrections to misspellings of directories
 shopt -s extglob      # Globbing Options (extended globs [extglob])
 shopt -s histappend   # Append to the history file, don't overwrite it
-# shopt -s globstar   # The '**' glob matches all files and zero or more [sub]directories
+shopt -s globstar     # The '**' glob matches all files and zero or more [sub]directories
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -115,14 +99,7 @@ shopt -s histappend   # Append to the history file, don't overwrite it
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
 rxvt*|xterm*|*-256color)
-    # PS1="\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$(gitBranchName) \$ "
-    #
-    # Had lots of problems with incorporating the git branch name; the important point is
-    # to wrap the variables in \[ \] blocks -- this tells bash that this is a non text
-    # entry and therefore it will not count the string in the columns & rows calculation
-    # PS1="\[\e[01;34m\]\w \[\$(gitBranchColour)\]\$(gitBranchName)\[\e[0m\] \n\$ "
-    # PS1='\[\e[01;32m\]\u\[\e[0m\]:\[\e[01;34m\]\w\[\e[0m\] \[\$(gitBranchName)\]\[\e[0m\] \$ '
-    PS1="\n\[\e[32m\]\w\[\$(gitBranchColour)\]\$(gitBranchName) \[\e[0m\] \n\[\e[90m\]» \[\e[39m\]"
+    PS1="\n\[$COLOUR_GREEN\]\w\[$COLOUR_WHITE\]\$(gitBranchName) \[\e[0m\] \n\[\e[90m\]» \[\e[39m\]"
     ;;
 *)
     PS1="\w\[$txtcyn\]\$(gitBranchName) \$ "
@@ -138,14 +115,16 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+alias irssi='TERM=screen-256color irssi' # this fixes the issue where irssi only refreshes half of screen when scrolling in tmux
 alias tmux='tmux -2' # Start in 256 colour mode
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-alias vi='vim'
 alias open='xdg-open'
 
 alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
+
+alias vi='vim'
 
 # Enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -184,11 +163,34 @@ fi
 
 bind '"\C-g":"git commit -m \"\"\e[D'
 
-ag() {
-    $(which ag) --ignore tags "$@";
-}
-
 # Prevent ctrl+s/ctrl+q behaviour
 stty -ixon
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/richard/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/home/richard/Downloads/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc' ]; then . '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc'; fi
+
+# Bash Completions
+kubectl version > /dev/null 2>&1 && source <(kubectl completion bash)
+
+test -f ~/.bash_work && source ~/.bash_work
+
+
+########################
+#        Pyenv         #
+########################
+
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(direnv hook bash)"
+
+export NPM_BIN_DIR="/usr/local/node/node-v12.6.0-linux-x64/bin"
+export PATH="$NPM_BIN_DIR:$PATH"
+
+alias helmtiller='helm tiller run -- helm'
+alias terraform='/home/richard/.bin/terraform'
