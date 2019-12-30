@@ -18,7 +18,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'mileszs/ack.vim'
   Plug 'moll/vim-node'
   Plug 'morhetz/gruvbox'
-  " Plug 'natebosch/vim-lsc'                  " vim language server client
+  Plug 'natebosch/vim-lsc'                  " vim language server client
+  " Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', }
   Plug 'pangloss/vim-javascript'
   Plug 'severin-lemaignan/vim-minimap'
   Plug 'shime/vim-livedown', { 'do': 'sudo npm install -g livedown' }
@@ -43,15 +44,15 @@ call plug#begin('~/.vim/plugged')
   Plug 'rakr/vim-two-firewatch'
   Plug 'romainl/Apprentice'
   Plug 'gergap/wombat256'
-  Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install() }}
-  Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+  " Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+  Plug 'nvie/vim-flake8'
   Plug 'editorconfig/editorconfig-vim'
+  Plug 'rust-lang/rust.vim'
 call plug#end()
 
 " GENERAL CONFIGURATION OPTIONS
 set history=1000            " command history size
 set bs=2                    " Backspace not working on windows
-set colorcolumn=120
 set helpheight=100          " full screen help
 set hidden                  " don't ask to save when changing buffers (i.e. when jumping to a type definition)
 set nocompatible            " force not to run like vi (that's "vee-eye" people!)
@@ -64,6 +65,8 @@ set ttyfast
 set lazyredraw
 set wildignore=*.o,*.obj,*/node_modules/*,*/go/**/vendor/*,tags
 set completeopt=longest,menuone
+set timeoutlen=1000
+set ttimeoutlen=0
 
 " USER INTERFACE OPTIONS
 colorscheme gruvbox
@@ -79,7 +82,13 @@ set guioptions-=m             " no menu bar in gVim
 set guioptions-=r             " no right-hand scroll bar in gVim
 set laststatus=2              " always display statusbar
 set mouse=a                   " mouse Support In Terminal
-set ttymouse=xterm2
+set fillchars+=vert:│         " a solid line separator on vertical splits
+
+" From: https://neovim.io/doc/user/nvim.html#nvim-from-vim
+if !has('nvim')
+  set ttymouse=xterm2
+endif
+
 set number                    " line numbers on
 set relativenumber            " relative line numbers on
 set ruler                     " always show cursor position
@@ -149,6 +158,7 @@ augroup END
 
 augroup Go
   autocmd FileType go vmap <Leader>gi :GoImports<Enter>
+  autocmd FileType go set colorcolumn=120
   " autocmd FileType go autocmd BufWritePre <buffer> :GoImports
 augroup END
 
@@ -161,6 +171,12 @@ augroup MarkDown
   " Align GitHub-flavored Markdown tables
   autocmd FileType markdown vmap <Leader><Bslash> :EasyAlign*<Bar><Enter>
   autocmd Filetype markdown set spell wrap linebreak textwidth=80
+augroup END
+
+augroup Python
+  autocmd FileType python set colorcolumn=80 tabstop=4 sts=4 sw=4 et smarttab listchars=tab:\|\  list
+  autocmd BufWritePost *.py call flake8#Flake8()
+
 augroup END
 
 augroup Terraform
@@ -253,6 +269,14 @@ let g:syntastic_loc_list_height = 3
 let g:syntastic_ruby_checkers = ['rubocop']
 
 let g:fugitive_gitlab_domains = ['https://gitlab.fmts.int']
+
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+    \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
+    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+    \ 'python': ['/usr/local/bin/pyls'],
+    \ 'ruby': ['~/.rbenv/shims/solargraph', 'stdio'],
+    \ }
 
 " ShellCheck {{{
 autocmd Filetype sh set makeprg=shellcheck\ -f\ gcc\ % tabstop=4 sts=4 sw=4 et smarttab
