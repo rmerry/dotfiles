@@ -1,8 +1,11 @@
+echo "Running .bashrc"
+
 # Exit if shell is not running interactively$()
 case $- in
     *i*) ;;
     *) return;;
 esac
+
 
 ########################
 #   Global Variables   #
@@ -149,6 +152,8 @@ alias ngrep='grep -Ern --exclude-dir=node_modules --exclude-dir=logs --exclude=\
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
+alias k="kubectl"
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -175,22 +180,36 @@ if [ -f '/home/richard/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/hom
 if [ -f '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc' ]; then . '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc'; fi
 
 # Bash Completions
-kubectl version > /dev/null 2>&1 && source <(kubectl completion bash)
+if command -v kubectl 1>/dev/null 2>&1; then
+  source <(kubectl completion bash)
+if
 
 test -f ~/.bash_work && source ~/.bash_work
 
 
-########################
-#        Pyenv         #
-########################
+# Pyenv
+if command -v pyenv 1>/dev/null 2>&1; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+fi
 
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(direnv hook bash)"
+# rbenv
+if command -v rbenv 1>/dev/null 2>&1; then
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+fi
 
 export NPM_BIN_DIR="/usr/local/node/node-v12.6.0-linux-x64/bin"
 export PATH="$NPM_BIN_DIR:$PATH"
-
 alias helmtiller='helm tiller run -- helm'
 alias terraform='/home/richard/.bin/terraform'
+
+# Personal scripts
+export PATH=$PATH:$HOME/.bin
+
+# Go
+export GO111MODULE=on
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/go/bin
+export PATH=$HOME/.cargo/bin:$PATH # Rust package manager
