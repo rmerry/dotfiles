@@ -78,11 +78,9 @@ gag() {
 ########################
 
 export EDITOR=vim
-
-# Avoid duplicates
-export HISTCONTROL=ignoredups:erasedups
-export HISTSIZE=1000000
+export HISTCONTROL=ignorespace:ignoredups:erasedups # Avoid duplicates
 export HISTFILESIZE=$HISTSIZE
+export HISTSIZE=1000000
 export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
 
 # When the shell exits, append to the history file instead of overwriting it
@@ -96,8 +94,13 @@ shopt -s extglob      # Globbing Options (extended globs [extglob])
 shopt -s histappend   # Append to the history file, don't overwrite it
 shopt -s globstar     # The '**' glob matches all files and zero or more [sub]directories
 
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+# Prevent ctrl+s/ctrl+q behaviour
+stty -ixon
+
+# Make less more friendly for non-text input files, see lesspipe(1)
+if hash 1lesspipe 2>&-; then
+  eval "$(lesspipe)"
+fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
@@ -113,21 +116,17 @@ esac
 #       Aliases        #
 ########################
 
-# Read in an alias config (if one exists)
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
 alias irssi='TERM=screen-256color irssi' # this fixes the issue where irssi only refreshes half of screen when scrolling in tmux
-alias tmux='tmux -2' # Start in 256 colour mode
-alias ll='ls -alF'
-alias la='ls -A'
+alias k="kubectl"
 alias l='ls -CF'
+alias la='ls -A'
+alias ll='ls -alF --time-style=full-iso'
 alias open='xdg-open'
-
+alias rot13="tr '[A-Za-z]' '[N-ZA-Mn-za-m]'"
 alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
-
+alias tmux='tmux -2' # Start in 256 colour mode
 alias vi='vim'
+alias rg="rg --ignore-case --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:green' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold'"
 
 # Enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -137,8 +136,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias fgrep='fgrep --color=auto'
     alias egrep='grep -E --color=auto'
 fi
-
-alias rot13="tr '[A-Za-z]' '[N-ZA-Mn-za-m]'"
 
 # git aliases
 alias lg='git log --color --graph --pretty=format:%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset --abbrev-commit'
@@ -152,7 +149,6 @@ alias ngrep='grep -Ern --exclude-dir=node_modules --exclude-dir=logs --exclude=\
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-alias k="kubectl"
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -168,10 +164,10 @@ fi
 
 bind '"\C-g":"git commit -m \"\"\e[D'
 
-# Prevent ctrl+s/ctrl+q behaviour
-stty -ixon
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+if [ -f ~/.fzf.bash ]; then
+  source ~/.fzf.bash
+fi
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/richard/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/home/richard/Downloads/google-cloud-sdk/path.bash.inc'; fi
@@ -182,15 +178,15 @@ if [ -f '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc' ]; then .
 # Bash Completions
 if command -v kubectl 1>/dev/null 2>&1; then
   source <(kubectl completion bash)
-if
+fi
 
 test -f ~/.bash_work && source ~/.bash_work
 
 
-# Pyenv
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
 fi
 
@@ -202,14 +198,16 @@ fi
 
 export NPM_BIN_DIR="/usr/local/node/node-v12.6.0-linux-x64/bin"
 export PATH="$NPM_BIN_DIR:$PATH"
-alias helmtiller='helm tiller run -- helm'
-alias terraform='/home/richard/.bin/terraform'
+alias helm='helm tiller run -- helm'
+alias terraform='/home/richard/scripts/terraform'
 
 # Personal scripts
-export PATH=$PATH:$HOME/.bin
+export PATH=$PATH:$HOME/scripts
 
 # Go
 export GO111MODULE=on
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:$HOME/go/bin
+export PATH=$PATH:/usr/local/go/bin:~/go/bin
+# export PATH=$PATH:$HOME/go/bin
 export PATH=$HOME/.cargo/bin:$PATH # Rust package manager
+
+eval "$(direnv hook bash)"
