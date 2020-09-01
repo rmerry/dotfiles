@@ -18,7 +18,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'mileszs/ack.vim'
   Plug 'moll/vim-node'
   Plug 'morhetz/gruvbox'
-  Plug 'natebosch/vim-lsc'                  " vim language server client
+  " Plug 'natebosch/vim-lsc'                  " vim language server client
   " Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', }
   Plug 'pangloss/vim-javascript'
   Plug 'severin-lemaignan/vim-minimap'
@@ -48,6 +48,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'nvie/vim-flake8'
   Plug 'editorconfig/editorconfig-vim'
   Plug 'rust-lang/rust.vim'
+  Plug 'pechorin/any-jump.vim'
+  Plug 'aserebryakov/vim-todo-lists'
 call plug#end()
 
 " GENERAL CONFIGURATION OPTIONS
@@ -101,9 +103,9 @@ set title                     " window title reflects name of current file
 set wildmenu                  " show possible tab completion matches in menu above status bar
 
 " SWAP, BACKUP AND UNDO OPTIONS
-set directory=$HOME/.vim/swp//
-set backupdir=$HOME/.vim/backup//
-set undodir=$HOME/.vim/undo//
+set directory=$HOME/.vim/swp/
+set backupdir=$HOME/.vim/backup/
+set undodir=$HOME/.vim/undo/
 set undofile
 set writebackup
 
@@ -156,10 +158,20 @@ augroup OpenQuickfixWindowAfterMake
   autocmd QuickFixCmdPost    l* nested lwindow
 augroup END
 
-augroup Go
+augroup go
+  autocmd!
   autocmd FileType go vmap <Leader>gi :GoImports<Enter>
   autocmd FileType go set colorcolumn=120
   " autocmd FileType go autocmd BufWritePre <buffer> :GoImports
+  " let g:go_metalinter_autosave_enabled = ['vet', 'golint']
+  let g:go_code_completion_enabled=1
+  " let g:go_def_mode='guru'
+  " let g:go_info_mode='guru'
+  " let g:go_referrers_mode='guru'
+  let g:go_fmt_command = "goimports"
+  " let g:go_metalinter_autosave_enabled = ['vet']
+  " let g:go_metalinter_deadline = "5s"
+  " autocmd BufWritePost *.go :GoVet
 augroup END
 
 augroup FiletypeGroup
@@ -170,7 +182,7 @@ augroup END
 augroup MarkDown
   " Align GitHub-flavored Markdown tables
   autocmd FileType markdown vmap <Leader><Bslash> :EasyAlign*<Bar><Enter>
-  autocmd Filetype markdown set spell wrap linebreak textwidth=80
+  autocmd Filetype markdown set spell wrap linebreak textwidth=0 wrapmargin=0
 augroup END
 
 augroup Python
@@ -183,6 +195,10 @@ augroup Terraform
   let g:terraform_align=1
   let g:terraform_fmt_on_save=1
   let g:terraform_fold_sections=1
+augroup END
+
+augroup QuickFix
+  autocmd FileType qf wincmd J " QuickFix spans full width of screen
 augroup END
 
 " Omnifuncs
@@ -217,8 +233,9 @@ nnoremap [l :lprevious<CR>
 " For vimgrep
 nnoremap <leader>gw :vimgrep /<C-R><C-W>/gj **<CR>:botright cwindow<CR>
 nnoremap <leader>gW :vimgrep /<C-R><C-A>/gj **<CR>:botright cwindow<CR>
+map <F4> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 
-map <F4> :execute "vimgrep /" . expand("<cword>") . "/gj **/.* **" <Bar> cw<CR>
+" map <F4> :execute "vimgrep /" . expand("<cword>") . "/gj **/.* **" <Bar> cw<CR>
 
 " Enhanced editing facilities
 nnoremap ds% %x``x          " Remove surrounding {[( objects
@@ -270,16 +287,21 @@ let g:syntastic_ruby_checkers = ['rubocop']
 
 let g:fugitive_gitlab_domains = ['https://gitlab.fmts.int']
 
-let g:LanguageClient_serverCommands = {
-    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-    \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
-    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-    \ 'python': ['/usr/local/bin/pyls'],
-    \ 'ruby': ['~/.rbenv/shims/solargraph', 'stdio'],
-    \ }
+let g:VimTodoListsDatesEnabled = 1
+let g:VimTodoListsDatesFormat = "%a %b, %Y"
+
+" let g:LanguageClient_serverCommands = {
+"     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+"     \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
+"     \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+"     \ 'python': ['/usr/local/bin/pyls'],
+"     \ 'ruby': ['~/.rbenv/shims/solargraph', 'stdio'],
+"     \ }
 
 " ShellCheck {{{
 autocmd Filetype sh set makeprg=shellcheck\ -f\ gcc\ % tabstop=4 sts=4 sw=4 et smarttab
+
+autocmd FileType * set fo+=c fo+=r fo-=o fo+=q fo+=j
 
 augroup programming_language_specific_configuration
   autocmd FileType go call SetGoOptions()
@@ -384,18 +406,23 @@ if has("cscope")
 
 endif
 
-let g:lsc_server_commands = { 'javascript.jsx': 'javascript-typescript-stdio' }
-let g:lsc_server_commands = { 'javascript': 'javascript-typescript-stdio' }
-" let g:lsc_server_commands = { 'ruby': 'language_server-ruby' }
+" let g:lsc_server_commands = { 'javascript.jsx': 'javascript-typescript-stdio' }
+" let g:lsc_server_commands = { 'javascript': 'javascript-typescript-stdio' }
+" " let g:lsc_server_commands = { 'ruby': 'language_server-ruby' }
 
-let g:lsc_auto_map = {
-    \ 'GoToDefinition': '<C-]>',
-    \ 'FindReferences': 'gr',
-    \ 'FindCodeActions': 'ga',
-    \ 'DocumentSymbol': 'go',
-    \ 'ShowHover': 'K',
-    \ 'Completion': 'completefunc',
-    \}
+" let g:lsc_auto_map = {
+"     \ 'GoToDefinition': '<C-]>',
+"     \ 'FindReferences': 'gr',
+"     \ 'FindCodeActions': 'ga',
+"     \ 'DocumentSymbol': 'go',
+"     \ 'ShowHover': 'K',
+"     \ 'Completion': 'completefunc',
+"     \}
+
+let g:ale_linters = {
+\   'sh': ['shellcheck'],
+\}
+let g:ale_linters_explicit = 1 " Only run linters named in ale_linters settings.
 
 " STATUS LINE
 function! StatuslineGit()
