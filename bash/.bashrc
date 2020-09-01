@@ -1,5 +1,3 @@
-echo "Running .bashrc"
-
 # Exit if shell is not running interactively$()
 case $- in
     *i*) ;;
@@ -52,11 +50,11 @@ gitBranchName() {
     elif [ -n $branch_name ]; then
         # Set color based on clean/staged/dirty.
         if [[ "${status}" =~ (tree clean) ]]; then
-            echo -en " ${branch_name}${COLOUR_GREEN}◼"
+            echo -en " ${branch_name}${COLOUR_GREEN} ◼"
           elif [[ "${status}" =~ (Changes (to be committed|not staged)) ]]; then
-            echo -en " ${branch_name}${COLOUR_RED}◼"
+            echo -en " ${branch_name}${COLOUR_RED} ◼"
         elif [[ "${status}" =~ (Untracked files) ]]; then
-            echo -en " ${branch_name}${COLOUR_YELLOW}◼"
+            echo -en " ${branch_name}${COLOUR_YELLOW} ◼"
         fi
     fi
 }
@@ -162,11 +160,14 @@ if ! shopt -oq posix; then
     fi
 fi
 
-bind '"\C-g":"git commit -m \"\"\e[D'
+bind '"\C-g":"git commit -m \"\"\e[D"'
 
 
-if [ -f ~/.fzf.bash ]; then
-  source ~/.fzf.bash
+if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+  . /usr/share/doc/fzf/examples/key-bindings.bash
+fi
+if [ -f /usr/share/doc/fzf/examples/completion.bash ]; then
+  . /usr/share/doc/fzf/examples/completion.bash
 fi
 
 # The next line updates PATH for the Google Cloud SDK.
@@ -196,7 +197,8 @@ if command -v rbenv 1>/dev/null 2>&1; then
   eval "$(rbenv init -)"
 fi
 
-export NPM_BIN_DIR="/usr/local/node/node-v12.6.0-linux-x64/bin"
+export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
+
 export PATH="$NPM_BIN_DIR:$PATH"
 alias helm='helm tiller run -- helm'
 alias terraform='/home/richard/scripts/terraform'
@@ -210,4 +212,7 @@ export PATH=$PATH:/usr/local/go/bin:~/go/bin
 # export PATH=$PATH:$HOME/go/bin
 export PATH=$HOME/.cargo/bin:$PATH # Rust package manager
 
-eval "$(direnv hook bash)"
+# eval "$(direnv hook bash)"
+
+alias worktask="vim ~/work.todo"
+alias personaltask="vim ~/personal.todo"
