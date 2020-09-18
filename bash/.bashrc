@@ -207,7 +207,6 @@ alias terraform='/home/richard/scripts/terraform'
 export PATH=$PATH:$HOME/scripts
 
 # Go
-export GO111MODULE=on
 export PATH=$PATH:/usr/local/go/bin:~/go/bin
 # export PATH=$PATH:$HOME/go/bin
 export PATH=$HOME/.cargo/bin:$PATH # Rust package manager
@@ -216,3 +215,5 @@ export PATH=$HOME/.cargo/bin:$PATH # Rust package manager
 
 alias worktask="vim ~/work.todo"
 alias personaltask="vim ~/personal.todo"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
