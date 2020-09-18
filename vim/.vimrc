@@ -14,23 +14,23 @@ call plug#begin('~/.vim/plugged')
   Plug 'hashivim/vim-terraform'
   Plug 'jelera/vim-javascript-syntax'
   Plug 'junegunn/vim-easy-align'            " Aligning markdown tables
-  Plug 'kien/ctrlp.vim'                     " fuzzy file finder
+  " Plug 'kien/ctrlp.vim'                     " fuzzy file finder
   Plug 'mileszs/ack.vim'
   Plug 'moll/vim-node'
   Plug 'morhetz/gruvbox'
   " Plug 'natebosch/vim-lsc'                  " vim language server client
   " Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', }
-  Plug 'pangloss/vim-javascript'
+  " Plug 'pangloss/vim-javascript'
   Plug 'severin-lemaignan/vim-minimap'
   Plug 'shime/vim-livedown', { 'do': 'sudo npm install -g livedown' }
   Plug 'shumphrey/fugitive-gitlab.vim'
-  Plug 'thoughtbot/vim-rspec'
+  " Plug 'thoughtbot/vim-rspec'
   Plug 'tpope/vim-commentary'               " comment out text
-  Plug 'tpope/vim-cucumber'
+  " Plug 'tpope/vim-cucumber'
   Plug 'tpope/vim-fugitive'                 " git integration
-  Plug 'tpope/vim-rails'
+  " Plug 'tpope/vim-rails'
   Plug 'tpope/vim-vinegar'                  " enhances netrw
-  Plug 'vim-ruby/vim-ruby'
+  " Plug 'vim-ruby/vim-ruby'
   " Plug 'w0rp/ale'                           " linter integration
   Plug 'owickstrom/vim-colors-paramount'
   " Plug 'plan9-for-vimspace/acme-colors'
@@ -45,11 +45,14 @@ call plug#begin('~/.vim/plugged')
   Plug 'romainl/Apprentice'
   Plug 'gergap/wombat256'
   " Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
-  Plug 'nvie/vim-flake8'
+  " Plug 'nvie/vim-flake8'
   Plug 'editorconfig/editorconfig-vim'
-  Plug 'rust-lang/rust.vim'
+  " Plug 'rust-lang/rust.vim'
   Plug 'pechorin/any-jump.vim'
   Plug 'aserebryakov/vim-todo-lists'
+
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
 call plug#end()
 
 " GENERAL CONFIGURATION OPTIONS
@@ -158,18 +161,28 @@ augroup OpenQuickfixWindowAfterMake
   autocmd QuickFixCmdPost    l* nested lwindow
 augroup END
 
+let g:go_fmt_command = "goimports"
+let g:go_auto_type_info = 1
+
+" let g:go_def_mode = 'guru'
+" let g:go_implements_mode = 'guru'
+" let g:go_info_mode = 'guru'
+" let g:go_referrers_mode = 'guru'
+" let g:go_rename_command = 'gorename'
+" let g:go_metalinter_command = "golangci-lint"
+
 augroup go
   autocmd!
   autocmd FileType go vmap <Leader>gi :GoImports<Enter>
   autocmd FileType go set colorcolumn=120
   " autocmd FileType go autocmd BufWritePre <buffer> :GoImports
   " let g:go_metalinter_autosave_enabled = ['vet', 'golint']
-  let g:go_code_completion_enabled=1
-  " let g:go_def_mode='guru'
-  " let g:go_info_mode='guru'
-  " let g:go_referrers_mode='guru'
-  let g:go_fmt_command = "goimports"
-  " let g:go_metalinter_autosave_enabled = ['vet']
+
+  " let g:go_def_mode = 'guru'
+  " let g:go_implements_mode = 'guru'
+  " let g:go_info_mode = 'guru'
+  " let g:go_referrers_mode = 'guru'
+
   " let g:go_metalinter_deadline = "5s"
   " autocmd BufWritePost *.go :GoVet
 augroup END
@@ -263,10 +276,13 @@ nnoremap <leader>a :Ack! ''<left>
 "  0 or '' (empty string) - disable this feature.
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_map = '<c-p>'
+let g:ctrlp_max_files = 0
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:40,results:40'
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|\.git/'
+let g:ctrlp_root_markers = ['.ctrlp']
 let g:ctrlp_show_hidden = 1
+let g:ctrlp_clear_cache_on_exit = 0
 
 " }}}
 
@@ -418,6 +434,16 @@ endif
 "     \ 'ShowHover': 'K',
 "     \ 'Completion': 'completefunc',
 "     \}
+
+" FZF Options
+" let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.9, 'height': 0.9,'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'sharp' } }
+let g:fzf_layout = {'down':'~80%' }
+let $FZF_DEFAULT_OPTS = '--layout=reverse --info=inline'
+let $FZF_DEFAULT_COMMAND="rg --files"
+nnoremap <c-p> :Files<CR>
+nnoremap <silent> <C-f> :Files<CR>
+nnoremap <silent> <Leader>f :Rg<CR>
+nnoremap <silent> <Leader>b :Buffers<CR>
 
 let g:ale_linters = {
 \   'sh': ['shellcheck'],
