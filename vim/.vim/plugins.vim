@@ -47,6 +47,7 @@ call plug#begin('~/.vim/plugged')
   " Plug 'rust-lang/rust.vim'
   Plug 'pechorin/any-jump.vim'
   Plug 'aserebryakov/vim-todo-lists'
+  Plug 'fifi2/gtd.vim'
 
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
