@@ -197,7 +197,9 @@ if command -v rbenv 1>/dev/null 2>&1; then
   eval "$(rbenv init -)"
 fi
 
+export CODE_DIR="~/Code"
 export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
+export DOTFILES="$CODE_DIR/personal/dotfiles"
 
 export PATH="$NPM_BIN_DIR:$PATH"
 alias helm='helm tiller run -- helm'
