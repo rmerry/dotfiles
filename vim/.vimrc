@@ -385,13 +385,16 @@ endif
 
 " FZF Options
 " let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.9, 'height': 0.9,'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'sharp' } }
-let g:fzf_layout = {'down':'~80%' }
-let $FZF_DEFAULT_OPTS = '--layout=reverse --info=inline'
+let g:fzf_layout={'down':'~80%' }
+let g:fzf_preview_window='right:30%'
+let $FZF_DEFAULT_OPTS='--layout=reverse --info=inline'
 let $FZF_DEFAULT_COMMAND="rg --files"
+
 nnoremap <c-p> :Files<CR>
-nnoremap <silent> <C-f> :Files<CR>
-nnoremap <silent> <Leader>f :Rg<CR>
+nnoremap <silent> <Leader>f :Files<CR>
+nnoremap <silent> <Leader>F :Rg<CR>
 nnoremap <silent> <Leader>b :Buffers<CR>
+nnoremap <silent> <Leader>m :History<CR>
 
 let g:ale_linters = {
 \   'sh': ['shellcheck'],
