@@ -110,7 +110,8 @@ augroup OpenQuickfixWindowAfterMake
 augroup END
 
 let g:go_fmt_command = "goimports"
-let g:go_auto_type_info = 1
+let g:go_auto_type_info = 0
+let g:go_def_mode = 'guru'
 
 " let g:go_def_mode = 'guru'
 " let g:go_implements_mode = 'guru'
@@ -390,8 +391,9 @@ let g:fzf_preview_window='right:30%'
 let $FZF_DEFAULT_OPTS='--layout=reverse --info=inline'
 let $FZF_DEFAULT_COMMAND="rg --files"
 
+nnoremap <silent> <Leader>rg :Rg <C-R><C-W><CR>
 nnoremap <c-p> :Files<CR>
-nnoremap <silent> <Leader>f :Files<CR>
+nnoremap <silent> <Leader>ff :Files<CR>
 nnoremap <silent> <Leader>F :Rg<CR>
 nnoremap <silent> <Leader>b :Buffers<CR>
 nnoremap <silent> <Leader>m :History<CR>
@@ -422,3 +424,5 @@ endfunction
 let &statusline='%<%t%m%r %y%=%{LinterStatus()}%14.{StatuslineGit()}%14.(%l,%c%V %p%)'
 highlight ColorColumn ctermbg=white
 syntax on
+
+let g:gtd#dir = '~/.gtd'
