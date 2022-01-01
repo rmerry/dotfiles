@@ -119,12 +119,15 @@ alias k="kubectl"
 alias l='ls -CF'
 alias la='ls -A'
 alias ll='ls -alF --time-style=full-iso'
+alias lss='ls -lahrS'
+alias lst='ls -lahrt'
 alias open='xdg-open'
 alias rot13="tr '[A-Za-z]' '[N-ZA-Mn-za-m]'"
 alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
 alias tmux='tmux -2' # Start in 256 colour mode
 alias vi='vim'
 alias rg="rg --ignore-case --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:green' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold'"
+alias cdvc="cd /home/richard/.config/nvim/"
 
 # Enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -209,6 +212,7 @@ alias terraform='/home/richard/scripts/terraform'
 export PATH=$PATH:$HOME/scripts
 
 # Go
+export GOPATH=~/go/
 export PATH=$PATH:/usr/local/go/bin:~/go/bin
 # export PATH=$PATH:$HOME/go/bin
 export PATH=$HOME/.cargo/bin:$PATH # Rust package manager
@@ -219,3 +223,29 @@ alias worktask="vim ~/work.todo"
 alias personaltask="vim ~/personal.todo"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+########################
+#         Rust         #
+########################
+
+export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
+. "$HOME/.cargo/env"
+
+
+
+#######################
+#         Vim         #
+#######################
+if ! command -v nvim &> /dev/null
+then
+  alias vi=vim
+else
+  alias vi=nvim
+  alias vim=nvim
+fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+alias luamake=/home/richard/Code/public/lua-language-server/3rd/luamake/luamake
