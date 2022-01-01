@@ -141,14 +141,19 @@ function! gtd#results#Display(mods, gtd_id)
 		let l:content = []
 
 		for l:gtd in get(s:results_history, a:gtd_id, [])
-			let l:content += [ l:gtd['formula'] ]
-			if empty(l:gtd['results'])
-				let l:content += [ ' No result' ]
+			let l:title = l:gtd['formula']
+			let l:nb_tasks = len(l:gtd['results'])
+			if l:nb_tasks <= 1
+				let l:title .= ' ['.l:nb_tasks.' task]'
 			else
+				let l:title .= ' ['.l:nb_tasks.' tasks]'
+			endif
+			let l:content += [ l:title ]
+			if !empty(l:gtd['results'])
 				for l:r in l:gtd['results']
-					let l:attached = l:r['attached'] ? '[*]' : '[ ]'
+					let l:attached = l:r['attached'] ? ' [*]' : ''
 					let l:content += [
-						\ ' '.l:r['key'].' '.l:attached.' '.l:r['title']
+						\ ' '.l:r['key'].' '.l:r['title'].l:attached
 						\ ]
 				endfor
 			endif
@@ -234,5 +239,17 @@ endfunction
 function! s:GtdResultsFreeze()
 	execute "silent! keeppatterns $-1,$g/^$/d | 1"
 	execute "setlocal nomodifiable"
+endfunction
+
+function! gtd#results#Do(cmd)
+	let l:targets = []
+	for l:search in get(gtd#results#Get(), 'gtd')
+		let l:targets += get(l:search, 'results')
+	endfor
+	execute '%argdelete'
+	for l:target in uniq(sort(l:targets))
+		execute 'argadd '.g:gtd#dir.l:target.'.gtd'
+	endfor
+	execute 'argdo '.a:cmd
 endfunction
 

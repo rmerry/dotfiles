@@ -51,4 +51,16 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
+  " Plug 'scrooloose/nerdtree'
+
+  " Language Server Protocol
+  " Plug 'prabirshrestha/vim-lsp'
+  " Plug 'mattn/vim-lsp-settings'
+  " Plug 'prabirshrestha/asyncomplete.vim'
+
+  Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
+
+  if has('nvim')
+    Plug 'neovim/nvim-lspconfig'
+  end
 call plug#end()

@@ -18,14 +18,15 @@ command! -bang -nargs=1 -complete=customlist,gtd#search#CommandTagComplete Gtd c
 command! -bang -nargs=1 -complete=customlist,gtd#search#CommandTagComplete GtdAdd call gtd#search#Start(<q-mods>, <q-bang>, <q-args>, 'add')
 command! -bang -nargs=1 -complete=customlist,gtd#search#CommandTagComplete GtdFilter call gtd#search#Start(<q-mods>, <q-bang>, <q-args>, 'filter')
 command! -nargs=0 GtdRefresh call gtd#search#Start(<q-mods>, '!', '', 'refresh')
-command! -nargs=1 -complete=customlist,gtd#search#CommandTagComplete GtdContext call gtd#search#Context(<f-args>)
+command! -bang -nargs=? -complete=customlist,gtd#search#CommandTagComplete GtdContext call gtd#search#Context(<q-bang>, <f-args>)
+command! -nargs=+ -complete=customlist,gtd#search#CommandTagComplete GtdMove call gtd#search#AtomMove(<f-args>)
 
 if !empty('g:gtd#review')
 	command! -bang -nargs=0 GtdReview call gtd#search#Start(<q-mods>, <q-bang>, '', 'review')
 endif
 
 if g:gtd#cache == 1
-	command! -nargs=0 GtdCache call gtd#cache#Refresh()
+	command! -nargs=0 GtdCache call gtd#cache#All()
 endif
 
 if exists('g:gtd#debug') && g:gtd#debug

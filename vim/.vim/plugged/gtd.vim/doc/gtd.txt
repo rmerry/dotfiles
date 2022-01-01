@@ -374,10 +374,15 @@ and wait for the first empty line before leaving the search. >
 		    :Gtd !archive (#john-doe + /john\sdoe) @work -/foo
 <
 						*:GtdContext*
-:GtdContext {arg}   Change (or set) the current value of
+:GtdContext [{arg}] Change (or set) the current value of
 		    |g:gtd#default_context|.
 
+		    Display the current context when {arg} is omitted.
+
 		    {arg} must be a valid context (Eg. @work).
+
+:GtdContext!	    Unset the current default context (as set by
+		    |g:gtd#default_context|).
 
 						*:GtdAdd*
 :GtdAdd[!] {formula}
@@ -436,6 +441,23 @@ and wait for the first empty line before leaving the search. >
 :GtdCache	    Create or refresh a cache file to speed up your searches.
 		    Only available when |g:gtd#cache| has been set.
 
+						*:GtdMove*
+:GtdMove {source} {destination}
+		    Replace {source} atom by {destination}, in all notes.
+		    Only possible with @context, !action or #tag.
+
+>
+		    :GtdMove #foo #bar
+<
+
+						*:GtdDo*
+:GtdDo {cmd}
+		    Execute {cmd} on each |gtd-note| in the current results
+		    using the Vim |argument-list|.
+
+>
+		    :GtdDo GtdDelete
+<
 
 ==============================================================================
 4. Mappings					*gtd-mappings*

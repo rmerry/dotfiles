@@ -4,6 +4,8 @@ source ~/.vim/plugins.vim
 
 
 " GENERAL CONFIGURATION OPTIONS
+set nobackup
+set nowritebackup
 set history=1000            " command history size
 set bs=2                    " Backspace not working on windows
 set helpheight=100          " full screen help
@@ -11,6 +13,7 @@ set hidden                  " don't ask to save when changing buffers (i.e. when
 set nocompatible            " force not to run like vi (that's "vee-eye" people!)
 set path+=**                " `:find' will work up to 30 sub directories deep
 set showcmd                 " show commands as being typed at bottom of screen
+set cmdheight=2             " more space for displaying messages
 set showmatch               " show matching parenthesis
 set showmode                " show current mode at bottom of buffer window
 set autoread                " automatically reread file if unmodified in vim
@@ -20,6 +23,7 @@ set wildignore=*.o,*.obj,*/node_modules/*,*/go/**/vendor/*,tags
 set completeopt=longest,menuone
 set timeoutlen=1000
 set ttimeoutlen=0
+set updatetime=300          " default is 4000 and this leads to poor UX
 
 " USER INTERFACE OPTIONS
 colorscheme gruvbox
@@ -55,10 +59,8 @@ set wildmenu                  " show possible tab completion matches in menu abo
 
 " SWAP, BACKUP AND UNDO OPTIONS
 set directory=$HOME/.vim/swp/
-set backupdir=$HOME/.vim/backup/
 set undodir=$HOME/.vim/undo/
 set undofile
-set writebackup
 
 " TEXT RENDERING OPTIONS
 set encoding=utf-8
@@ -89,6 +91,16 @@ set foldmethod=indent
 set spell spelllang=en_gb
 set nospell
 
+" COC Settings
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+if has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
+
 " Editor Config Plugin
 
 " * To ensure that this plugin works well with Tim Pope's fugitive
@@ -101,7 +113,7 @@ autocmd ColorScheme * hi clear SpellBad
 
 autocmd Filetype set tabstop=2 sts=2 sw=2 et smarttab
 autocmd BufNewFile,BufRead *.txt set spell wrap linebreak textwidth=80
-autocmd BufRead,BufNewFile text setlocal textwidth=80
+" autocmd BufRead,BufNewFile text setlocal textwidth=80
 
 " Open Quickfix window automatically after running :make
 augroup OpenQuickfixWindowAfterMake
@@ -111,7 +123,7 @@ augroup END
 
 let g:go_fmt_command = "goimports"
 let g:go_auto_type_info = 0
-let g:go_def_mode = 'guru'
+" let g:go_def_mode = 'guru'
 
 " let g:go_def_mode = 'guru'
 " let g:go_implements_mode = 'guru'
@@ -134,6 +146,14 @@ augroup go
 
   " let g:go_metalinter_deadline = "5s"
   " autocmd BufWritePost *.go :GoVet
+augroup END
+
+augroup rust
+  autocmd BufRead *.rs :setlocal tags=./tags;/,$RUST_SRC_PATH/rusty-tags.vi " Ctags suport via rusty-tags
+augroup END
+
+augroup fugitive
+  autocmd QuickFixCmdPost *grep* cwindow # git grep results appear in quickfix window
 augroup END
 
 augroup FiletypeGroup
@@ -204,8 +224,8 @@ nnoremap ds% %x``x          " Remove surrounding {[( objects
 nnoremap ds" di"hPl2x       " Remove surrounding double quote
 
 nnoremap <leader><c-p> :CtrlPMRUFiles<CR>
-
 nnoremap <leader>a :Ack! ''<left>
+
 
 " autocompletion menu
 "
@@ -255,6 +275,7 @@ let g:fugitive_gitlab_domains = ['https://gitlab.fmts.int']
 let g:VimTodoListsDatesEnabled = 1
 let g:VimTodoListsDatesFormat = "%a %b, %Y"
 
+
 " let g:LanguageClient_serverCommands = {
 "     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
 "     \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
@@ -277,6 +298,9 @@ augroup programming_language_specific_configuration
     nnoremap <F2> :GoRename<CR>
     nnoremap <leader>ge :GoErrCheck<CR>
     nnoremap <leader>gi :GoImport
+    nnoremap <leader>b :GoDebugBreakpoint<CR>
+    nnoremap <leader>n :GoDebugContinue<CR>
+    nnoremap <leader>n :GoDebugNext<CR>
   endfunction
 
   function! SetJavascriptOptions()
@@ -371,6 +395,8 @@ if has("cscope")
 
 endif
 
+nmap <Leader>r :NERDTreeFocus<cr>R<c-w><c-p>
+
 " let g:lsc_server_commands = { 'javascript.jsx': 'javascript-typescript-stdio' }
 " let g:lsc_server_commands = { 'javascript': 'javascript-typescript-stdio' }
 " " let g:lsc_server_commands = { 'ruby': 'language_server-ruby' }
@@ -420,6 +446,47 @@ function! LinterStatus() abort
   "       \ l:all_errors
   "       \)
 endfunction
+
+augroup vim_lsp
+  if executable('pyls')
+      " pip install python-language-server
+      au User lsp_setup call lsp#register_server({
+          \ 'name': 'pyls',
+          \ 'cmd': {server_info->['pyls']},
+          \ 'allowlist': ['python'],
+          \ })
+  endif
+
+  function! s:on_lsp_buffer_enabled() abort
+      setlocal omnifunc=lsp#complete
+      setlocal signcolumn=yes
+      if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+      nmap <buffer> gd <plug>(lsp-definition)
+      nmap <buffer> gs <plug>(lsp-document-symbol-search)
+      nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+      nmap <buffer> gr <plug>(lsp-references)
+      nmap <buffer> gi <plug>(lsp-implementation)
+      nmap <buffer> gt <plug>(lsp-type-definition)
+      nmap <buffer> <leader>rn <plug>(lsp-rename)
+      nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+      nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+      nmap <buffer> K <plug>(lsp-hover)
+      inoremap <buffer> <expr><c-f> lsp#scroll(+4)
+      inoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+      let g:lsp_format_sync_timeout = 1000
+      autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+
+      " refer to doc to add more commands
+  endfunction
+
+  augroup lsp_install
+      au!
+      " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+      autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+  augroup END
+augroup END
+
 
 let &statusline='%<%t%m%r %y%=%{LinterStatus()}%14.{StatuslineGit()}%14.(%l,%c%V %p%)'
 highlight ColorColumn ctermbg=white

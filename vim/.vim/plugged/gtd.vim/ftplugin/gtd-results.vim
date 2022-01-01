@@ -21,6 +21,8 @@ execute 'setlocal textwidth=0'
 execute 'setlocal noundofile'
 execute 'setlocal colorcolumn=0'
 execute 'setlocal cursorline'
+execute 'setlocal conceallevel=2'
+execute 'setlocal concealcursor=nvic'
 
 execute 'silent! file! Gtd results'
 
@@ -68,6 +70,8 @@ if has('folding')
 endif
 
 augroup gtd-results
+	autocmd!
+	execute 'command! -buffer -nargs=1 GtdDo call gtd#results#Do(<q-args>)'
 	execute 'autocmd BufUnload <buffer> call gtd#results#Close()'
 augroup END
 
