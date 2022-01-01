@@ -1,0 +1,155 @@
+startup_mode: Fullscreen
+
+shell:
+  program: /bin/zsh
+  args:
+    - --login
+
+# Font configuration (changes require restart)
+font:
+  # The normal (roman) font face to use.
+  normal:
+    family: Arial Mono MT Pro
+    # Style can be specified to pick a specific face.
+    style: Regular
+
+  # The bold font face
+  bold:
+    family: Arial Mono MT Pro
+    # Style can be specified to pick a specific face.
+    style: Bold
+
+  # The italic font face
+  italic:
+    family: Arial Mono MT Pro
+    # Style can be specified to pick a specific face.
+    style: Oblique
+
+  bold_italic:
+    family: Arial Mono MT Pro
+    # Style can be specified to pick a specific face.
+    style: Bold Oblique
+
+# Colors (Ayu Dark)
+# colors:
+#   # Default colors
+#   primary:
+#     background: '#0A0E14'
+#     foreground: '#B3B1AD'
+
+#   # Normal colors
+#   normal:
+#     black: '#01060E'
+#     red: '#EA6C73'
+#     green: '#91B362'
+#     yellow: '#F9AF4F'
+#     blue: '#53BDFA'
+#     magenta: '#FAE994'
+#     cyan: '#90E1C6'
+#     white: '#C7C7C7'
+
+#   # Bright colors
+#   bright:
+#     black: '#686868'
+#     red: '#F07178'
+#     green: '#C2D94C'
+#     yellow: '#FFB454'
+#     blue: '#59C2FF'
+#     magenta: '#FFEE99'
+#     cyan: '#95E6CB'
+#     white: '#FFFFFF'
+
+# colors:
+#   primary:
+#     foreground: '#d0cfcc'
+#     background: '#171421'
+#     bright_foreground: '#ffffff'
+
+#   normal:
+#     black:   '#171421'
+#     red:     '#c01c28'
+#     green:   '#26a269'
+#     yellow:  '#a2734c'
+#     blue:    '#12488b'
+#     magenta: '#a347ba'
+#     cyan:    '#2aa1b3'
+#     white:   '#d0cfcc'
+
+#   bright:
+#     black:   '#5e5c64'
+#     red:     '#f66151'
+#     green:   '#33d17a'
+#     yellow:  '#e9ad0c'
+#     blue:    '#2a7bde'
+#     magenta: '#c061cb'
+#     cyan:    '#33c7de'
+#     white:   '#ffffff'
+
+# colors:
+#   primary:
+#     foreground: '#dadee9'
+#     background: '#191a1f'
+#     bright_foreground: '#ffffff'
+
+#   normal:
+#     black:   '#191a1f'
+#     red:     '#cf6a69'
+#     green:   '#a8c595'
+#     yellow:  '#ecc968'
+#     blue:    '#7898cb'
+#     magenta: '#b897c4'
+#     cyan:    '#80b0b3'
+#     white:   '#dadee9'
+
+#   bright:
+#     black:   '#5e5c64'
+#     red:     '#f66151'
+#     green:   '#33d17a'
+#     yellow:  '#e9ad0c'
+#     blue:    '#2a7bde'
+#     magenta: '#c061cb'
+#     cyan:    '#33c7de'
+#     white:   '#ffffff'
+
+# Cai (from: https://mayccoll.github.io/Gogh/)
+colors:
+  primary:
+    foreground: '#dadee9'
+    background: '#09111a'
+    bright_foreground: '#ffffff'
+
+
+
+
+# ███ *** AaBbMmYyZz 02 --- ███ #ca274d
+
+# ███ *** AaBbMmYyZz 03 --- ███ #4dca27
+
+# ███ *** AaBbMmYyZz 04 --- ███ #caa427
+
+# ███ *** AaBbMmYyZz 05 --- ███ #274dca
+
+# ███ *** AaBbMmYyZz 06 --- ███ #a427ca
+
+# ███ *** AaBbMmYyZz 07 --- ███ #27caa4
+
+# ███ *** AaBbMmYyZz 08 --- ███ #808080
+  normal:
+    black:   '#000000'
+    red:     '#ca274d'
+    green:   '#4dca27'
+    yellow:  '#caa427'
+    blue:    '#274dca'
+    magenta: '#a427ca'
+    cyan:    '#27caa4'
+    white:   '#808080'
+
+  bright:
+    black:   '#808080'
+    red:     '#e98da3'
+    green:   '#a3e98d'
+    yellow:  '#e9d48d'
+    blue:    '#8da3e9'
+    magenta: '#d48de9'
+    cyan:    '#8de9d4'
+    white:   '#ffffff'
