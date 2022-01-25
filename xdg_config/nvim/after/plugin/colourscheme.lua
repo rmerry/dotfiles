@@ -4,8 +4,10 @@ if pcall(require, "colorizer") then
   require("colorizer").setup()
 end
 
-if not pcall(require, "colorbuddy") then
-  return
-end
+-- if not pcall(require, "colorbuddy") then
+--   return
+-- end
 
-require("colorbuddy").colorscheme("gruvbuddy")
+-- require("colorbuddy").colorscheme("gruvbuddy")
+
+require('vscode').change_style("dark") 

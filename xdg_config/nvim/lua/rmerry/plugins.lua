@@ -11,6 +11,7 @@ require "paq" {
   "tjdevries/colorbuddy.vim";
   "tjdevries/gruvbuddy.nvim";
   "nvim-lua/plenary.nvim";
+  "Mofiqul/vscode.nvim";
 
   -- Editor Config
   "editorconfig/editorconfig-vim";
@@ -19,6 +20,8 @@ require "paq" {
   "tpope/vim-vinegar";
   "nvim-telescope/telescope.nvim";
   "nvim-lua/plenary.nvim";
+  "kyazdani42/nvim-web-devicons"; -- for file icons
+  "kyazdani42/nvim-tree.lua";
 
   -- LSP
   "neovim/nvim-lspconfig";
@@ -48,4 +51,5 @@ require "paq" {
 
   -- Misc
   {"glacambre/firenvim", run = vim.fn['firenvim#install']};
+  "lukas-reineke/indent-blankline.nvim";
 }

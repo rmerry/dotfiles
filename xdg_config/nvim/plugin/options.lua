@@ -9,9 +9,12 @@ opt.incsearch = true -- While searching show where the pattern, as it was typed 
 opt.joinspaces = false -- No double spaces with join
 opt.number = true
 opt.relativenumber = true
+opt.mouse = "a"
 
 opt.scrolloff = 10 -- Make it so there are always ten lines below my cursor
 opt.sidescrolloff = 8
+
+opt.clipboard = "unnamedplus"
 
 opt.showcmd = true -- Show (partial) command on the last line of the screen.
 opt.showmatch = true -- Show matching brackets when cursor is over one of them.

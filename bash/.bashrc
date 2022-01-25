@@ -19,8 +19,14 @@ COLOUR_RED="\e[0;31m"
 COLOUR_WHITE="\e[1;37m"
 COLOUR_YELLOW="\e[0;33m"
 
-export TERM="xterm-256color"
-[[ $TMUX = "" ]] && export TERM="xterm-256color"
+#export TERM="xterm-256color"
+#[[ $TMUX = "" ]] && export TERM="xterm-256color"
+
+if [[ $TMUX = "" ]]; then
+	export TERM="xterm-256color"
+else
+	export TERM="screen-256color"
+fi
 
 ########################
 # Function Definitions #
@@ -114,7 +120,6 @@ esac
 #       Aliases        #
 ########################
 
-alias irssi='TERM=screen-256color irssi' # this fixes the issue where irssi only refreshes half of screen when scrolling in tmux
 alias k="kubectl"
 alias l='ls -CF'
 alias la='ls -A'
@@ -124,10 +129,12 @@ alias lst='ls -lahrt'
 alias open='xdg-open'
 alias rot13="tr '[A-Za-z]' '[N-ZA-Mn-za-m]'"
 alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
-alias tmux='tmux -2' # Start in 256 colour mode
+alias tmux='tmux' # Start in 256 colour mode
 alias vi='vim'
 alias rg="rg --ignore-case --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:green' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold'"
 alias cdvc="cd /home/richard/.config/nvim/"
+alias rg="rg --hidden"
+alias irssi="TERM=screen-256color irssi --config=<((cat ~/.irssi/server_config && cat ~/.irssi/config))"
 
 # Enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -184,8 +191,6 @@ if command -v kubectl 1>/dev/null 2>&1; then
   source <(kubectl completion bash)
 fi
 
-test -f ~/.bash_work && source ~/.bash_work
-
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -232,10 +237,10 @@ export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
 . "$HOME/.cargo/env"
 
 
-
 #######################
 #         Vim         #
 #######################
+
 if ! command -v nvim &> /dev/null
 then
   alias vi=vim
@@ -249,3 +254,10 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 alias luamake=/home/richard/Code/public/lua-language-server/3rd/luamake/luamake
+
+################################
+# LEAVE THIS AS THE LAST LINE! #
+################################
+
+# If this is a work machine I will have a .bash_work file that needs sourcing
+test -f ~/.bash_work && source ~/.bash_work
