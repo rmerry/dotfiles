@@ -255,7 +255,7 @@ settings = {
     nick = "richard";
   };
   "fe-text" = { actlist_sort = "refnum"; };
-  "fe-common/core" = { theme = "oxynox"; };
+  "fe-common/core" = { theme = "neogold"; };
 };
 chatnets = { freenode = { type = "IRC"; }; };
 logs = { };
