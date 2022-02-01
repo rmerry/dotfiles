@@ -71,7 +71,7 @@ require('telescope').setup{
 }
 
 vim.cmd [[nnoremap <Leader>pp :lua require'telescope.builtin'.planets{}<cr>]]
-vim.cmd [[nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>]]
+vim.cmd [[nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files({hidden=true})<cr>]]
 vim.cmd [[nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>]]
 vim.cmd [[nnoremap <leader>gw <cmd>lua require('telescope.builtin').grep_string()<cr>]]
 vim.cmd [[nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>]]
