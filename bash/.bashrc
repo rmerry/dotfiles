@@ -46,11 +46,9 @@ COLOUR_RED="\e[0;31m"
 COLOUR_WHITE="\e[1;37m"
 COLOUR_YELLOW="\e[0;33m"
 
-# If we're using tmux set the TERM var to `screen-256color`
+# Don't set the TERM variable when using TMUX: use .tmux.conf instead
 if [ "$TMUX" = "" ]; then
 	export TERM="xterm-256color"
-else
-	export TERM="screen-256color"
 fi
 
 ########################
@@ -274,6 +272,6 @@ fi
 ################################
 
 # If this is a work machine I might have a .bash_work file that needs sourcing
-if [ -f "$HOME/bash_work" ]; then 
-	source "$HOME/bash_work"
+if [ -f "$HOME/.bash_work" ]; then 
+	source "$HOME/.bash_work"
 fi
