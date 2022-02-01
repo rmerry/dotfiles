@@ -1,7 +1,6 @@
 if [ -s $HOME/.bashrc ]; then
     source $HOME/.bashrc
 fi
-. "$HOME/.cargo/env"
 
 # Ensure agent is running
 ssh-add -l &>/dev/null

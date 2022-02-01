@@ -196,35 +196,49 @@ if command -v kubectl 1>/dev/null 2>&1; then
 	source <(kubectl completion bash)
 fi
 
+#########################################
+#         Programming Languages         #
+#########################################
 
-# pyenv
+export CODE_DIR="~/Code"
+export DOTFILES="$CODE_DIR/personal/dotfiles"
+export PATH=$PATH:$HOME/scripts # Personal scripts
+
+# Go
+export GOPATH=~/go/
+export PATH=$PATH:/usr/local/go/bin:~/go/bin
+
+# NodeJS
+export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
+export PATH="$NPM_BIN_DIR:$PATH"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Python
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
 	eval "$(pyenv init -)"
 fi
 
-# rbenv
+# Ruby
 if command -v rbenv 1>/dev/null 2>&1; then
 	export PATH="$HOME/.rbenv/bin:$PATH"
 	eval "$(rbenv init -)"
 fi
 
-export CODE_DIR="~/Code"
-export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
-export DOTFILES="$CODE_DIR/personal/dotfiles"
-
-export PATH="$NPM_BIN_DIR:$PATH"
 alias helm='helm tiller run -- helm'
 alias terraform='/home/richard/scripts/terraform'
 
-export PATH=$PATH:$HOME/scripts # Personal scripts
-
-# Go
-export GOPATH=~/go/
-export PATH=$PATH:/usr/local/go/bin:~/go/bin
-# export PATH=$PATH:$HOME/go/bin
-
+# Rust
+if ! command -v rustc &> /dev/null; then
+	export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
+	export PATH="$HOME/.cargo/bin:$PATH" # Rust package manager
+fi
+if [ -f "$HOME/.cargo/env" ]; then
+	source "$HOME/.cargo/env"
+fi
 
 # eval "$(direnv hook bash)"
 
@@ -232,16 +246,6 @@ alias worktask="vim ~/work.todo"
 alias personaltask="vim ~/personal.todo"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-########################
-#         Rust         #
-########################
-
-if ! command -v rustc &> /dev/null; then
-	export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
-	. "$HOME/.cargo/env"
-	export PATH=$HOME/.cargo/bin:$PATH # Rust package manager
-fi
 
 #######################
 #         Vim         #
@@ -253,10 +257,6 @@ else
 	alias vi=nvim
 	alias vim=nvim
 fi
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 alias luamake=/home/richard/Code/public/lua-language-server/3rd/luamake/luamake
 
