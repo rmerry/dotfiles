@@ -1,18 +1,17 @@
-# Exit if shell is not running interactively$()
-case $- in
-	*i*) ;;
-	*) return;;
-esac
+# Exit if shell is not interactive
+if [ -z "$PS1" ]; then
+	return 
+fi
 
 ########################
-#     Core Config      #
+#     CORE CONFIG      #
 ########################
 
 export EDITOR=vim
 export HISTCONTROL=ignorespace:ignoredups:erasedups # Avoid duplicates
 export HISTFILESIZE=$HISTSIZE
 export HISTSIZE=1000000
-export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+export PROMPT_COMMAND=__prompt_command
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
@@ -29,12 +28,12 @@ shopt -s globstar     # The '**' glob matches all files and zero or more [sub]di
 stty -ixon
 
 # Make less more friendly for non-text input files, see lesspipe(1)
-if hash 1lesspipe 2>&-; then
+if hash lesspipe 2>&-; then
 	eval "$(lesspipe)"
 fi
 
 ########################
-#   Global Variables   #
+#   GLOBAL VARIABLES   #
 ########################
 
 COLOUR_BLUE="\e[0;34m"
@@ -47,17 +46,15 @@ COLOUR_RED="\e[0;31m"
 COLOUR_WHITE="\e[1;37m"
 COLOUR_YELLOW="\e[0;33m"
 
-#export TERM="xterm-256color"
-#[[ $TMUX = "" ]] && export TERM="xterm-256color"
-
-if [[ $TMUX = "" ]]; then
+# If we're using tmux set the TERM var to `screen-256color`
+if [ "$TMUX" = "" ]; then
 	export TERM="xterm-256color"
 else
 	export TERM="screen-256color"
 fi
 
 ########################
-#       Aliases        #
+#       ALIASES        #
 ########################
 
 alias k="kubectl"
@@ -69,36 +66,42 @@ alias lst='ls -lahrt'
 alias open='xdg-open'
 alias rot13="tr '[A-Za-z]' '[N-ZA-Mn-za-m]'"
 alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
-alias tmux='tmux' # Start in 256 colour mode
-alias vi='vim'
+alias tmux='tmux -2' # Start in 256 colour mode
 alias rg="rg --ignore-case --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:green' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold'"
 alias cdvc="cd /home/richard/.config/nvim/"
 alias rg="rg --hidden"
-alias irssi="TERM=screen-256color irssi --config=<((cat ~/.irssi/server_config && cat ~/.irssi/config))"
+alias irssi="irssi --config=<((cat $HOME/.irssi/server_config && cat $HOME/.irssi/config))"
 
 # Enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
-	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+	test -r $HOME/dircolors && eval "$(dircolors -b $HOME/dircolors)" || eval "$(dircolors -b)"
 	alias ls='ls --color=auto'
 	alias grep='grep --color=auto'
 	alias fgrep='fgrep --color=auto'
 	alias egrep='grep -E --color=auto'
 fi
 
-# git aliases
+# git 
 alias lg='git log --color --graph --pretty=format:%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset --abbrev-commit'
 alias rpull='git pull --rebase'
 
-# Development
+# grep
 alias egrep='grep -E'
 alias ngrep='grep -Ern --exclude-dir=node_modules --exclude-dir=logs --exclude=\vendor.*.js --exclude=\prettify.js --exclude=\*.csv --exclude=\*.xml --exclude=\*.html --exclude=\*.js.map --exclude=\bundle.js --exclude=\*.out --exclude=\tags --exclude=\app.*.js'
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+# Vim 
+if command -v nvim &> /dev/null; then
+	alias vi=nvim
+	alias vim=nvim
+elif command -v vim &> /dev/null; then
+	alias vi=vim
+	alias vim=vim
+elif command -v vi &> /dev/null; then
+	alias vim=vi
+fi
 
 ########################
-# Function Definitions #
+# FUNCTION DEFINITIONS #
 ########################
 
 ag() {
@@ -150,26 +153,22 @@ gag() {
 # PROMPT #
 ##########
 
-case "$TERM" in
-	rxvt*|xterm*|*-256color) # colour prompt
-		PS1="\n\[$COLOUR_GREEN\]\w\[$COLOUR_WHITE\]\$(gitBranchName) \[\e[0m\] \n\[\e[90m\]» \[\e[39m\]"
-		;;
-	*) # basic no-colour prompt
-		PS1="\w\[$txtcyn\]\$(gitBranchName) \$ "
-		;;
-esac
+__prompt_command() {
+	local exit_code="$?"
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
+	local italic='\[\e[3m'
+	local code_clear='\[\e[0m\]'
 
-if ! shopt -oq posix; then
-	if [ -f /usr/share/bash-completion/bash_completion ]; then
-		. /usr/share/bash-completion/bash_completion
-	elif [ -f /etc/bash_completion ]; then
-		. /etc/bash_completion
+	PS1="\[$COLOUR_GREEN\]\w\[$COLOUR_WHITE\]\$(gitBranchName) ${code_clear} \n\[\e[90m\]» \[\e[39m\]"
+	if [ "$exit_code" != 0 ]; then
+		PS1="${italic}[${COLOUR_LIGHT_RED}${exit_code}${code_clear}${italic}]${code_clear} $PS1"
 	fi
-fi
+	PS1="\n$PS1"
+
+	history -a
+	history -c
+	history -r
+}
 
 ###################
 # CUSTOM BINDINGS #
@@ -177,53 +176,74 @@ fi
 
 bind '"\C-g":"git commit -m \"\"\e[D"'
 
-
 if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
-	. /usr/share/doc/fzf/examples/key-bindings.bash
-fi
-if [ -f /usr/share/doc/fzf/examples/completion.bash ]; then
-	. /usr/share/doc/fzf/examples/completion.bash
+	source /usr/share/doc/fzf/examples/key-bindings.bash
 fi
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/richard/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/home/richard/Downloads/google-cloud-sdk/path.bash.inc'; fi
+if [ -f '/home/richard/Downloads/google-cloud-sdk/path.bash.inc' ]; then 
+	source "/home/richard/Downloads/google-cloud-sdk/path.bash.inc"
+fi
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc' ]; then . '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc'; fi
+#################################
+# BASH COMMAND LINE COMPLETIONS #
+#################################
 
-# Bash Completions
+# Bash (this is probably not necessary as usually sourced in /etc/bash.bashrc or /etc/profile)
+if ! shopt -oq posix; then
+	if [ -f /usr/share/bash-completion/bash_completion ]; then
+		source /usr/share/bash-completion/bash_completion
+	elif [ -f /etc/bash_completion ]; then
+		source /etc/bash_completion
+	fi
+fi
+
+# FZF
+if [ -f "$HOME/fzf.bash" ]; then
+	source "$HOME/fzf.bash"
+fi
+if [ -f /usr/share/doc/fzf/examples/completion.bash ]; then
+	source /usr/share/doc/fzf/examples/completion.bash
+fi
+
+# kubectl
 if command -v kubectl 1>/dev/null 2>&1; then
 	source <(kubectl completion bash)
 fi
 
+# google-cloud-sdk
+if [ -f '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc' ]; then 
+	source '/home/richard/Downloads/google-cloud-sdk/completion.bash.inc'
+fi
+
 #########################################
-#         Programming Languages         #
+#         PROGRAMMING LANGUAGES         #
 #########################################
 
-export CODE_DIR="~/Code"
+export CODE_DIR="$HOME/Code"
 export DOTFILES="$CODE_DIR/personal/dotfiles"
 export PATH=$PATH:$HOME/scripts # Personal scripts
 
 # Go
-export GOPATH=~/go/
-export PATH=$PATH:/usr/local/go/bin:~/go/bin
+export GOPATH=$HOME/go/
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
 # NodeJS
 export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
 export PATH="$NPM_BIN_DIR:$PATH"
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Python
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
+if command -v pyenv &>/dev/null; then
 	eval "$(pyenv init -)"
 fi
 
 # Ruby
-if command -v rbenv 1>/dev/null 2>&1; then
+if command -v rbenv &>/dev/null; then
 	export PATH="$HOME/.rbenv/bin:$PATH"
 	eval "$(rbenv init -)"
 fi
@@ -232,7 +252,7 @@ alias helm='helm tiller run -- helm'
 alias terraform='/home/richard/scripts/terraform'
 
 # Rust
-if ! command -v rustc &> /dev/null; then
+if command -v rustc &> /dev/null; then
 	export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
 	export PATH="$HOME/.cargo/bin:$PATH" # Rust package manager
 fi
@@ -240,29 +260,20 @@ if [ -f "$HOME/.cargo/env" ]; then
 	source "$HOME/.cargo/env"
 fi
 
-# eval "$(direnv hook bash)"
+#############
+# UTILITIES #
+#############
 
-alias worktask="vim ~/work.todo"
-alias personaltask="vim ~/personal.todo"
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-#######################
-#         Vim         #
-#######################
-
-if ! command -v nvim &> /dev/null; then
-	alias vi=vim
-else
-	alias vi=nvim
-	alias vim=nvim
+# direnv
+if command -v direnv &> /dev/null; then
+	eval "$(direnv hook bash)"
 fi
-
-alias luamake=/home/richard/Code/public/lua-language-server/3rd/luamake/luamake
 
 ################################
 # LEAVE THIS AS THE LAST LINE! #
 ################################
 
-# If this is a work machine I will have a .bash_work file that needs sourcing
-test -f ~/.bash_work && source ~/.bash_work
+# If this is a work machine I might have a .bash_work file that needs sourcing
+if [ -f "$HOME/bash_work" ]; then 
+	source "$HOME/bash_work"
+fi
