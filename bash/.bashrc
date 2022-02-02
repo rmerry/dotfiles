@@ -7,7 +7,7 @@ fi
 #     CORE CONFIG      #
 ########################
 
-export EDITOR=vim
+export EDITOR=vi
 export HISTCONTROL=ignorespace:ignoredups:erasedups # Avoid duplicates
 export HISTFILESIZE=$HISTSIZE
 export HISTSIZE=1000000
@@ -93,18 +93,11 @@ if command -v nvim &> /dev/null; then
 	alias vim=nvim
 elif command -v vim &> /dev/null; then
 	alias vi=vim
-	alias vim=vim
-elif command -v vi &> /dev/null; then
-	alias vim=vi
 fi
 
 ########################
 # FUNCTION DEFINITIONS #
 ########################
-
-ag() {
-	$(which ag) --ignore tags "$@";
-}
 
 exitCode() {
 	local exit_code="$?"
