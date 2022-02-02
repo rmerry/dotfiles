@@ -1,0 +1,31 @@
+[core]
+	excludesfile = ~/.gitignore_global
+	pager = delta
+
+[alias]
+	br = branch
+	co = checkout
+	ci = commit
+	cl = clone
+	ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+	ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
+	st = status
+	lsd = log --diff-filter=D --summary
+
+[help]
+	autocorrect = 10
+
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true  # use n and N to move between diff sections
+
+[merge]
+	conflictstyle = diff3
+
+[diff]
+	colorMoved = default
