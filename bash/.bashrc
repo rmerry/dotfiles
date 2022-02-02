@@ -236,6 +236,7 @@ export NVM_DIR="$HOME/.nvm"
 # Python
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
+export PATH=$PATH:$HOME/.local/bin # Where pip installs things
 if command -v pyenv &>/dev/null; then
 	eval "$(pyenv init -)"
 fi
