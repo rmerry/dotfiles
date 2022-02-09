@@ -149,12 +149,34 @@ __prompt_command() {
 
 	local italic='\[\e[3m'
 	local code_clear='\[\e[0m\]'
+	local dim='\[\e[2m'
+	local dim_end='\[\e[22m'
 
-	PS1="\[$COLOUR_GREEN\]\w\[$COLOUR_WHITE\]\$(gitBranchName) ${code_clear} \n\[\e[90m\]» \[\e[39m\]"
-	if [ "$exit_code" != 0 ]; then
-		PS1="${italic}[${COLOUR_LIGHT_RED}${exit_code}${code_clear}${italic}]${code_clear} $PS1"
+	local file_count="$(ls -al | wc -l)"
+	local file_string="empty"
+	if [ $file_count -gt 0 ]; then
+		file_string="${file_count} files"
 	fi
-	PS1="\n$PS1"
+
+	# git repo info
+	PS1="\[$COLOUR_WHITE\]\$(gitBranchName) ${code_clear} \[$COLOUR_GREEN\]\w ${dim}(${file_string})${dim_end} \n\[\e[90m\]» \[\e[39m\]"
+
+	# background job info
+	local job_count="$(jobs -l | wc -l)"
+	local jobs_label="job"
+	if [ $job_count -gt 0 ]; then
+		if [ $job_count -gt 1 ]; then
+			jobs_label="jobs"
+		fi
+		PS1="${dim}[${job_count}-${jobs_label}]${dim_end} ${PS1}"
+	fi
+
+	# exit code info
+	if [ "$exit_code" != 0 -a "$exit_code" != 148 ]; then # 148 being the code after doing a ^-z
+		PS1="${COLOUR_LIGHT_RED}${exit_code}🠕${code_clear} ${PS1}"
+	fi
+
+	PS1="\n${PS1} "
 
 	history -a
 	history -c
