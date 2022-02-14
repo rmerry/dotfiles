@@ -32,6 +32,20 @@ if hash lesspipe 2>&-; then
 	eval "$(lesspipe)"
 fi
 
+########
+# PATH #
+########
+
+export PATH=$PATH:$HOME/scripts # Personal scripts
+export PATH=$PATH:$HOME/.local/bin 
+
+###############
+# CDABLE VARS #
+###############
+
+export CODE_DIR="$HOME/Code"
+export DOTFILES="$CODE_DIR/personal/dotfiles"
+
 ########################
 #   GLOBAL VARIABLES   #
 ########################
@@ -233,9 +247,6 @@ fi
 #         PROGRAMMING LANGUAGES         #
 #########################################
 
-export CODE_DIR="$HOME/Code"
-export DOTFILES="$CODE_DIR/personal/dotfiles"
-export PATH=$PATH:$HOME/scripts # Personal scripts
 
 # Go
 export GOPATH=$HOME/go/
@@ -251,7 +262,6 @@ export NVM_DIR="$HOME/.nvm"
 # Python
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-export PATH=$PATH:$HOME/.local/bin # Where pip installs things
 if command -v pyenv &>/dev/null; then
 	eval "$(pyenv init -)"
 fi
