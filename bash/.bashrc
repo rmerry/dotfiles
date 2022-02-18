@@ -173,7 +173,7 @@ __prompt_command() {
 	fi
 
 	# git repo info
-	PS1="\[$COLOUR_WHITE\]\$(gitBranchName) ${code_clear} \[$COLOUR_GREEN\]\w ${dim}(${file_string})${dim_end} \n\[\e[90m\]» \[\e[39m\]"
+	PS1="\[$COLOUR_WHITE\]\$(gitBranchName)${code_clear} \[$COLOUR_GREEN\]\w ${dim}(${file_string})${dim_end} \n\[\e[90m\]» \[\e[39m\]"
 
 	# background job info
 	local job_count="$(jobs -l | wc -l)"
@@ -190,7 +190,7 @@ __prompt_command() {
 		PS1="${COLOUR_LIGHT_RED}${exit_code}🠕${code_clear} ${PS1}"
 	fi
 
-	PS1="\n${PS1} "
+	PS1="\n\A\[$(tput sgr0)\] ${PS1} "
 
 	history -a
 	history -c
