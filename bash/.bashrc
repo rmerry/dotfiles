@@ -28,7 +28,7 @@ shopt -s globstar     # The '**' glob matches all files and zero or more [sub]di
 stty -ixon
 
 # Make less more friendly for non-text input files, see lesspipe(1)
-if hash lesspipe 2>&-; then
+if command -v lesspipe &> /dev/null; then
 	eval "$(lesspipe)"
 fi
 
@@ -50,15 +50,24 @@ export DOTFILES="$CODE_DIR/personal/dotfiles"
 #   GLOBAL VARIABLES   #
 ########################
 
-COLOUR_BLUE="\e[0;34m"
-COLOUR_GREEN="\e[0;32m"
-COLOUR_LIGHT_GRAY="\e[0;37m"
-COLOUR_LIGHT_GREEN="\e[1;32m"
-COLOUR_LIGHT_RED="\e[1;31m"
-COLOUR_NONE="\e[0m"
-COLOUR_RED="\e[0;31m"
-COLOUR_WHITE="\e[1;37m"
-COLOUR_YELLOW="\e[0;33m"
+if command -v tput &> /dev/null; then
+
+	# Colours
+	RED=$(tput setaf 1)
+	GREEN=$(tput setaf 2)
+	YELLOW=$(tput setaf 3)
+	WHITE=$(tput setaf 7)
+
+	# Styles
+	BOLD=$(tput bold)
+	NORMAL=$(tput sgr0)
+	DIM=$(tput dim)
+	ITALIC=$(tput sitm)
+
+else
+	echo "Warning: tput is not installed! Using basic mono-colour prompt."
+fi
+
 
 # Don't set the TERM variable when using TMUX: use .tmux.conf instead
 if [ "$TMUX" = "" ]; then
@@ -117,27 +126,28 @@ exitCode() {
 	local exit_code="$?"
 
 	if [ "$exit_code" -ne "0" ]; then
-		echo -e "${COLOUR_RED}\e[3m${exit_code}!\e[0m "
+		echo -e "${RED}\e[3m${exit_code}!\e[0m "
 	fi
 }
 
 # Get the git branch name
 gitBranchName() {
 	local status=$(git status 2> /dev/null)
+	local gitSymbol="\uE0A0"
 	local branch_name_line="$(echo $status | head -n 1)"
 	local branch_name="$(echo $branch_name_line | cut -d ' ' -f 3)"
 	if [[ "$branch_name_line" =~ (^HEAD detached at) ]]; then
-		echo -en " ${COLOUR_RED}[HEAD DETACHED]"
+		echo -en " ${RED}\uE0A0 [HEAD DETACHED]"
 	elif [[ "$branch_name_line" =~ (^rebase in progress) ]]; then
-		echo -en " ${COLOUR_RED}[REBASE IN PROGRESS]"
+		echo -en " ${RED}\uE0A0 [REBASE IN PROGRESS]"
 	elif [ -n $branch_name ]; then
 		# Set color based on clean/staged/dirty.
 		if [[ "${status}" =~ (tree clean) ]]; then
-			echo -en " ${branch_name}${COLOUR_GREEN} ◼"
+			echo -en "${GREEN}${branch_name} ${gitSymbol}"
 		elif [[ "${status}" =~ (Changes (to be committed|not staged)) ]]; then
-			echo -en " ${branch_name}${COLOUR_RED} ◼"
+			echo -en "${RED}${branch_name} ${gitSymbol}"
 		elif [[ "${status}" =~ (Untracked files) ]]; then
-			echo -en " ${branch_name}${COLOUR_YELLOW} ◼"
+			echo -en "${YELLOW}${branch_name} ${gitSymbol} "
 		fi
 	fi
 }
@@ -154,26 +164,37 @@ gag() {
 	fi
 }
 
+printTimestampAndExitCode() {
+	local exit_code="$1"
+	local timestamp="$(date '+%H:%M:%S')"
+	local exit_code_colour="$GREEN"
+
+	if [ $exit_code -gt 0 ]; then
+		exit_code_colour="$RED"
+	fi
+
+	let COL=$(tput cols)-${#timestamp}+${#GREEN}+${#NORMAL}
+
+	printf "\n%b%s%${COL}s\n\n" "$DIM" "$timestamp" "$exit_code_colour[$exit_code]$NORMAL"
+}
+
 ##########
 # PROMPT #
 ##########
 
 __prompt_command() {
 	local exit_code="$?"
-
-	local italic='\[\e[3m'
-	local code_clear='\[\e[0m\]'
-	local dim='\[\e[2m'
-	local dim_end='\[\e[22m'
-
 	local file_count="$(ls -al | wc -l)"
 	local file_string="empty"
+
 	if [ $file_count -gt 0 ]; then
 		file_string="${file_count} files"
 	fi
 
+	printTimestampAndExitCode $exit_code
+
 	# git repo info
-	PS1="\[$COLOUR_WHITE\]\$(gitBranchName)${code_clear} \[$COLOUR_GREEN\]\w ${dim}(${file_string})${dim_end} \n\[\e[90m\]» \[\e[39m\]"
+	PS1="\$(gitBranchName) \[$WHITE\]\w ${DIM}(${file_string})${NORMAL} \n\[\e[90m\]» \[\e[39m\]"
 
 	# background job info
 	local job_count="$(jobs -l | wc -l)"
@@ -182,15 +203,8 @@ __prompt_command() {
 		if [ $job_count -gt 1 ]; then
 			jobs_label="jobs"
 		fi
-		PS1="${dim}[${job_count}-${jobs_label}]${dim_end} ${PS1}"
+		PS1="${DIM}[${job_count}-${jobs_label}]${NORMAL} ${PS1}"
 	fi
-
-	# exit code info
-	if [ "$exit_code" != 0 -a "$exit_code" != 148 ]; then # 148 being the code after doing a ^-z
-		PS1="${COLOUR_LIGHT_RED}${exit_code}🠕${code_clear} ${PS1}"
-	fi
-
-	PS1="\n\A\[$(tput sgr0)\] ${PS1} "
 
 	history -a
 	history -c
@@ -246,7 +260,6 @@ fi
 #########################################
 #         PROGRAMMING LANGUAGES         #
 #########################################
-
 
 # Go
 export GOPATH=$HOME/go/
