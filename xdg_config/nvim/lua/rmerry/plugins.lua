@@ -46,6 +46,9 @@ require "paq" {
   "tjdevries/express_line.nvim"; -- Status bar.
   "nvim-lua/plenary.nvim";
 
+  -- Tab Bar
+  "mkitt/tabline.vim";
+
   -- Treesitter
   {"nvim-treesitter/nvim-treesitter",run = vim.cmd[["TSUpdate"]]};
 
