@@ -133,13 +133,13 @@ exitCode() {
 # Get the git branch name
 gitBranchName() {
 	local status=$(git status 2> /dev/null)
-	local gitSymbol="\uE0A0"
+	local gitSymbol=""
 	local branch_name_line="$(echo $status | head -n 1)"
 	local branch_name="$(echo $branch_name_line | cut -d ' ' -f 3)"
 	if [[ "$branch_name_line" =~ (^HEAD detached at) ]]; then
-		echo -en " ${RED}\uE0A0 [HEAD DETACHED]"
+		echo -en " ${RED}${gitSymbol} [HEAD DETACHED]"
 	elif [[ "$branch_name_line" =~ (^rebase in progress) ]]; then
-		echo -en " ${RED}\uE0A0 [REBASE IN PROGRESS]"
+		echo -en " ${RED}${gitSymbol} [REBASE IN PROGRESS]"
 	elif [ -n $branch_name ]; then
 		# Set color based on clean/staged/dirty.
 		if [[ "${status}" =~ (tree clean) ]]; then
@@ -184,7 +184,7 @@ printTimestampAndExitCode() {
 
 __prompt_command() {
 	local exit_code="$?"
-	local file_count="$(ls -al | wc -l)"
+	local file_count="$(ls -al | wc -l | awk '{$1=$1};1')"
 	local file_string="empty"
 
 	if [ $file_count -gt 0 ]; then
@@ -197,7 +197,7 @@ __prompt_command() {
 	PS1="\$(gitBranchName) \[$WHITE\]\w ${DIM}(${file_string})${NORMAL} \n\[\e[90m\]» \[\e[39m\]"
 
 	# background job info
-	local job_count="$(jobs -l | wc -l)"
+	local job_count="$(jobs -l | wc -l | awk '{$1=$1};1')"
 	local jobs_label="job"
 	if [ $job_count -gt 0 ]; then
 		if [ $job_count -gt 1 ]; then
@@ -306,6 +306,8 @@ if command -v direnv &> /dev/null; then
 	eval "$(direnv hook bash)"
 fi
 
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 ################################
 # LEAVE THIS AS THE LAST LINE! #
 ################################
@@ -314,3 +316,5 @@ fi
 if [ -f "$HOME/.bash_work" ]; then 
 	source "$HOME/.bash_work"
 fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
