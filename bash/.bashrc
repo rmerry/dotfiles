@@ -38,6 +38,7 @@ fi
 
 export PATH=$PATH:$HOME/scripts # Personal scripts
 export PATH=$PATH:$HOME/.local/bin 
+export PATH=$PATH:$HOME/bin 
 
 ###############
 # CDABLE VARS #
@@ -45,6 +46,12 @@ export PATH=$PATH:$HOME/.local/bin
 
 export CODE_DIR="$HOME/Code"
 export DOTFILES="$CODE_DIR/personal/dotfiles"
+
+######################
+# CORE UTILS CONFIGS #
+######################
+
+export LESS="-i" # makes less' seearch feature case insensitive
 
 ########################
 #   GLOBAL VARIABLES   #
@@ -121,6 +128,19 @@ fi
 ########################
 # FUNCTION DEFINITIONS #
 ########################
+
+backupCodeDir() {
+	if ! command -v rsync &> /dev/null; then
+		echo "ERROR: rsync is not installed!"
+		return
+	fi
+
+	if [[ -z $NAS_SERVER_URL ]]; then
+		echo "ERROR: NAS_SERVER_URL environment variable not set."
+	fi
+
+	rsync -av ~/code/mine rsync@$NAS_SERVER_URL::rsync/code/mine
+}
 
 exitCode() {
 	local exit_code="$?"
@@ -236,6 +256,8 @@ if ! shopt -oq posix; then
 		source /usr/share/bash-completion/bash_completion
 	elif [ -f /etc/bash_completion ]; then
 		source /etc/bash_completion
+	elif [ -f /opt/homebrew/etc/profile.d/bash_completion.sh  ]; then
+		source /opt/homebrew/etc/profile.d/bash_completion.sh
 	fi
 fi
 
@@ -318,3 +340,4 @@ if [ -f "$HOME/.bash_work" ]; then
 fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+. "$HOME/.cargo/env"

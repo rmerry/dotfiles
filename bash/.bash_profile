@@ -27,3 +27,4 @@ if [ "$?" == 1 ]; then
     ssh-add ~/.ssh/azuredevops
     ssh-add ~/.ssh/id_rsa
 fi
+. "$HOME/.cargo/env"

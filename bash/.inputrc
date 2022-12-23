@@ -11,8 +11,9 @@ set menu-complete-display-prefix on
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
 
-TAB:menu-complete
-"\e[Z": menu-complete-backward
+'TAB:menu-complete'
+# bind "\e[Z":'menu-complete-backward'
+
 
 # vi editing-mode options:
 #set show-mode-in-prompt on
