@@ -38,7 +38,7 @@ require('packer').startup(function(use)
     end,
   }
 
-  use { -- Additional text objects via treesitter
+  use {
     'nvim-treesitter/nvim-treesitter-textobjects',
     after = 'nvim-treesitter',
   }
@@ -100,6 +100,9 @@ vim.o.hlsearch = false
 
 -- Make line numbers default
 vim.wo.number = true
+
+-- Set relative line numbers
+vim.wo.relativenumber = true
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
@@ -338,7 +341,20 @@ end
 --  the `settings` field of the server config. You must look up that documentation yourself.
 local servers = {
   -- clangd = {},
-  -- gopls = {},
+  gopls = {
+    gopls = {
+          analyses = {
+            nilness = true,
+            unusedparams = true,
+            unusedwrite = true,
+            useany = true,
+          },
+          experimentalPostfixCompletions = true,
+          gofumpt = true,
+          staticcheck = true,
+          usePlaceholders = true,
+        },
+  },
   -- pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},

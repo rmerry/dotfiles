@@ -32,7 +32,7 @@ window:
   decorations: full
 
 schemes:
-  codelight: &light
+  codelight: &dark
     primary:
       background: '#ffffff'
       foreground: '#1e1e1e'
@@ -93,6 +93,7 @@ schemes:
 
 colors: *light
 
+# Make Alt key work as I would like it to on MacOS.
 key_bindings:
   - { key: A,         mods: Alt,       chars: "\x1ba"                       }
   - { key: B,         mods: Alt,       chars: "\x1bb"                       }
