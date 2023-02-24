@@ -7,19 +7,19 @@ shell:
 
 font:
   normal:
-    family: MesloLGMDZ Nerd Font Mono
+    family: MesloLGL Nerd Font Mono
     style: Regular
 
   bold:
-    family: MesloLGMDZ Nerd Font Mono
+    family: MesloLGL Nerd Font Mono
     style: Bold
 
   italic:
-    family: MesloLGMDZ Nerd Font Mono
+    family: MesloLGL Nerd Font Mono
     style: Italic
 
   bold_italic:
-    family: MesloLGMDZ Nerd Font Mono
+    family: MesloLGL Nerd Font Mono
     style: Bold Italic
 
 window.opacity: 1
@@ -91,7 +91,7 @@ schemes:
       cyan:    '#56b6c2'
       white:   '#d4d4d4'
 
-colors: *light
+colors: *dark
 
 # Make Alt key work as I would like it to on MacOS.
 key_bindings:

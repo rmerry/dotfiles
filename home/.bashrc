@@ -307,9 +307,6 @@ if command -v rbenv &>/dev/null; then
 	eval "$(rbenv init -)"
 fi
 
-alias helm='helm tiller run -- helm'
-alias terraform='/home/richard/scripts/terraform'
-
 # Rust
 if command -v rustc &> /dev/null; then
 	export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
