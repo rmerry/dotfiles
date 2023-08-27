@@ -11,7 +11,7 @@ set menu-complete-display-prefix on
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
 
-'TAB:menu-complete'
+# 'TAB:menu-complete'
 # bind "\e[Z":'menu-complete-backward'
 
 

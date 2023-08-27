@@ -22,6 +22,28 @@ font:
     family: MesloLGL Nerd Font Mono
     style: Bold Italic
 
+cursor:
+  style:
+    # Values for `shape`:
+    #   - ▇ Block
+    #   - _ Underline
+    #   - | Beam
+    shape: Underline
+
+    # Cursor blinking state
+    #
+    # Values for `blinking`:
+    #   - Never: Prevent the cursor from ever blinking
+    #   - Off: Disable blinking by default
+    #   - On: Enable blinking by default
+    #   - Always: Force the cursor to always blink
+    blinking: On
+
+  blink_interval: 750
+  blink_timeout: 5
+  unfocused_hollow: true
+  thickness: 0.15 # Thickness of the cursor relative to the cell width as floating point number from `0.0` to `1.0`.
+
 window.opacity: 1
 
 window:
@@ -153,6 +175,7 @@ key_bindings:
   - { key: Key4,      mods: Alt,       chars: "\x1b4"                       }
   - { key: Key5,      mods: Alt,       chars: "\x1b5"                       }
   - { key: Key6,      mods: Alt,       chars: "\x1b6"                       }
+  - { key: Key6,      mods: Control,   chars: "\x1b[94;5u"                  }
   - { key: Key7,      mods: Alt,       chars: "\x1b7"                       }
   - { key: Key8,      mods: Alt,       chars: "\x1b8"                       }
   - { key: Key9,      mods: Alt,       chars: "\x1b9"                       }
