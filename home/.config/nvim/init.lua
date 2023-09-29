@@ -65,6 +65,8 @@ vim.opt.rtp:prepend(lazypath)
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
+  --
+  'github/copilot.vim',
 
   'godlygeek/tabular',
 
@@ -153,6 +155,7 @@ require('lazy').setup({
 
   -- Fuzzy Finder (files, lsp, etc)
   { 'nvim-telescope/telescope.nvim', version = '*', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'smartpde/telescope-recent-files', version = '*', dependencies = { 'nvim-telescope/telescope.nvim' } },
 
   -- Fuzzy Finder Algorithm which requires local dependencies to be built.
   -- Only load if `make` is available. Make sure you have the system
@@ -194,6 +197,10 @@ require('lazy').setup({
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
+
+  -- Copilot
+vim.g.copilot_no_tab_map = true
+vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 -- Set highlight on search
 vim.o.hlsearch = true
@@ -257,6 +264,23 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
+  -- Remove inline diagnostics virtual text and improve hover ergonomics
+  vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = {
+      spacing = 4,
+    },
+    underline = true,
+    signs = true
+  })
+  vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+    focusable = false,
+  })
+  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+    focusable = false
+  })
+  vim.api.nvim_command('autocmd CursorHold * lua vim.diagnostic.open_float(0, { focusable = false, scope = "line", border = "single" })')
+  vim.api.nvim_command('autocmd CursorHoldI * silent! lua vim.lsp.buf.signature_help()')
+
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 ignored_dirs_str = os.getenv('IGNORED_DIRS') or "vendor,.git"
@@ -289,6 +313,9 @@ require('telescope').setup {
   },
 }
 
+-- Load telescope extension.
+pcall(require('telescope').load_extension, 'recent_files')
+
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
@@ -308,6 +335,14 @@ vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+-- Map a shortcut to open the picker.
+vim.api.nvim_set_keymap("n", "<Leader><Leader>",
+  [[<cmd>lua require('telescope').extensions.recent_files.pick()<CR>]],
+  {noremap = true, silent = true})
+
+vim.keymap.set('n', '<leader>gs', require('telescope.builtin').git_status, { desc = '[G]it [S]tatus' })
+vim.keymap.set('n', '<leader>gc', require('telescope.builtin').git_commits, { desc = '[G]it [C]ommits' })
+vim.keymap.set('n', '<leader>gbc', require('telescope.builtin').git_bcommits, { desc = '[G]it [B]uffer [C]ommits' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -434,6 +469,7 @@ end
 local servers = {
   -- clangd = {},
   gopls = {},
+  zls = {},
   -- pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},

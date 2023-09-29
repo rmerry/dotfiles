@@ -39,6 +39,7 @@ fi
 export PATH=$PATH:$HOME/scripts # Personal scripts
 export PATH=$PATH:$HOME/.local/bin 
 export PATH=$PATH:$HOME/bin 
+export PATH=$PATH:$HOME/local/bin 
 
 ###############
 # CDABLE VARS #
@@ -81,6 +82,8 @@ if [ "$TMUX" = "" ]; then
 	export TERM="xterm-256color"
 fi
 
+export IGNORED_DIRS="vendor,.git"
+
 ########################
 #       ALIASES        #
 ########################
@@ -100,6 +103,10 @@ alias cdvc="cd /home/richard/.config/nvim/"
 alias rg="rg --hidden"
 alias irssi="irssi --config=<((cat $HOME/.irssi/server_config && cat $HOME/.irssi/config))"
 
+# fzf shortcuts
+alias git-switch-branch="git switch \$(git branch | fzf)"
+alias git-find-file="git ls-files | fzf"
+
 # Enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
 	test -r $HOME/dircolors && eval "$(dircolors -b $HOME/dircolors)" || eval "$(dircolors -b)"
@@ -117,7 +124,7 @@ alias rpull='git pull --rebase'
 alias egrep='grep -E'
 alias ngrep='grep -Ern --exclude-dir=node_modules --exclude-dir=logs --exclude=\vendor.*.js --exclude=\prettify.js --exclude=\*.csv --exclude=\*.xml --exclude=\*.html --exclude=\*.js.map --exclude=\bundle.js --exclude=\*.out --exclude=\tags --exclude=\app.*.js'
 
-# Vim 
+# # Vim 
 if command -v nvim &> /dev/null; then
 	alias vi=nvim
 	alias vim=nvim
@@ -128,6 +135,7 @@ fi
 ########################
 # FUNCTION DEFINITIONS #
 ########################
+
 
 backupCodeDir() {
 	if ! command -v rsync &> /dev/null; then
@@ -237,9 +245,6 @@ __prompt_command() {
 
 bind '"\C-g":"git commit -m \"\"\e[D"'
 
-if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
-	source /usr/share/doc/fzf/examples/key-bindings.bash
-fi
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/richard/Downloads/google-cloud-sdk/path.bash.inc' ]; then 
@@ -261,13 +266,21 @@ if ! shopt -oq posix; then
 	fi
 fi
 
-# FZF
+###############
+# FZF OPTIONS #
+###############
+
 if [ -f "$HOME/fzf.bash" ]; then
 	source "$HOME/fzf.bash"
 fi
 if [ -f /usr/share/doc/fzf/examples/completion.bash ]; then
 	source /usr/share/doc/fzf/examples/completion.bash
 fi
+if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+	source /usr/share/doc/fzf/examples/key-bindings.bash
+fi
+
+export FZF_DEFAULT_OPTS='--height 25% --layout=reverse --border=none'
 
 # kubectl
 if command -v kubectl 1>/dev/null 2>&1; then
@@ -286,6 +299,9 @@ fi
 # Go
 export GOPATH=$HOME/go/
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+
+# zig
+export PATH=$PATH:/usr/local/zig/
 
 # NodeJS
 export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
