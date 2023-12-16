@@ -16,7 +16,7 @@
 	autocorrect = 10
 
 [url "git@github.com:"]
-	insteadOf = https://github.com/
+    insteadOf = https://github.com/
 
 [interactive]
 	diffFilter = delta --color-only
@@ -29,3 +29,10 @@
 
 [diff]
 	colorMoved = default
+[user]
+	name = Richard Merry
+	email = richard.merry@shell.com
+[credential]
+	helper = cache
+[pull]
+	rebase = false

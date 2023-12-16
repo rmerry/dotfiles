@@ -15,7 +15,7 @@ export PROMPT_COMMAND=__prompt_command
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
-shopt -s cdable_vars  # `cd` will search for exported variables if path not found
+#shopt -s cdable_vars  # `cd` will search for exported variables if path not found
 shopt -s cdspell      # Make minor corrections to misspellings of directories when using `cd`
 shopt -s checkwinsize # Check the win size after each command and update the values of LINES and COLUMNS
 shopt -s cmdhist      # Store multiline commands as a single history file entry
@@ -40,13 +40,6 @@ export PATH=$PATH:$HOME/scripts # Personal scripts
 export PATH=$PATH:$HOME/.local/bin 
 export PATH=$PATH:$HOME/bin 
 export PATH=$PATH:$HOME/local/bin 
-
-###############
-# CDABLE VARS #
-###############
-
-export CODE_DIR="$HOME/Code"
-export DOTFILES="$CODE_DIR/personal/dotfiles"
 
 ######################
 # CORE UTILS CONFIGS #
@@ -94,7 +87,7 @@ alias la='ls -A'
 alias ll='ls -alF --time-style=full-iso'
 alias lss='ls -lahrS'
 alias lst='ls -lahrt'
-alias open='xdg-open'
+# alias open='xdg-open'
 alias rot13="tr '[A-Za-z]' '[N-ZA-Mn-za-m]'"
 alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
 alias tmux='tmux -2' # Start in 256 colour mode
