@@ -48,6 +48,10 @@ return {
 			capabilities = capabilities,
 			on_attach = on_attach_func,
 		})
+		lspconfig["zls"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach_func,
+		})
 	end
 }
 

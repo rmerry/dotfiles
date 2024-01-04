@@ -37,9 +37,8 @@ fi
 ########
 
 export PATH=$PATH:$HOME/scripts # Personal scripts
-export PATH=$PATH:$HOME/local/bin 
+export PATH=$HOME/local/bin:$PATH
 export PATH=$PATH:$HOME/bin 
-export PATH=$PATH:$HOME/local/bin 
 
 ######################
 # CORE UTILS CONFIGS #
