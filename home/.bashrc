@@ -292,6 +292,7 @@ fi
 # Go
 export GOPATH=$HOME/go/
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+export GOPRIVATE="github.com/limejump/,github.com/rmerry/";
 
 # zig
 export PATH=$PATH:/usr/local/zig/
@@ -347,3 +348,5 @@ fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 . "$HOME/.cargo/env"
+
+eval "$(zoxide init bash)"
