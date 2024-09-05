@@ -40,6 +40,13 @@ export PATH=$PATH:$HOME/scripts # Personal scripts
 export PATH=$HOME/local/bin:$PATH
 export PATH=$PATH:$HOME/bin 
 
+###################################################
+# APPLICATION INSTALL LOCATIONS (CUSTOM PREFIXES) #
+###################################################
+
+export PATH=$HOME/local/nvim/bin:$PATH
+export PATH=$HOME/local/go/bin:$PATH
+
 ######################
 # CORE UTILS CONFIGS #
 ######################
@@ -290,18 +297,19 @@ fi
 
 # Go
 export GOPATH=$HOME/go/
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-export GOPRIVATE="github.com/limejump/,github.com/rmerry/";
+export PATH="$GOPATH/bin:$PATH"
 
 # zig
 export PATH=$PATH:/usr/local/zig/
 
 # NodeJS
 export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
+
 export PATH="$NPM_BIN_DIR:$PATH"
+
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Python
 export PYENV_ROOT="$HOME/.pyenv"
@@ -334,7 +342,9 @@ if command -v direnv &> /dev/null; then
 	eval "$(direnv hook bash)"
 fi
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if command  -v /opt/homebrew/bin/brew &> /dev/null; then
+	eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 ################################
 # LEAVE THIS AS THE LAST LINE! #
@@ -346,6 +356,28 @@ if [ -f "$HOME/.bash_work" ]; then
 fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-. "$HOME/.cargo/env"
 
-eval "$(zoxide init bash)"
+if command -v cargo &> /dev/null; then
+	source "$HOME/.cargo/env"
+fi
+
+if command -v zoxide &> /dev/null; then
+	eval "$(zoxide init bash)"
+	alias cd="z"
+fi
+
+################
+# WSL SETTINGS #
+################
+
+export BROWSER=/usr/bin/wslview
+
+
+
+export N_PREFIX="$HOMhttps://www.eatingbirdfood.com/summer-overnight-oats/E/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/tmp/google-cloud-sdk/path.bash.inc' ]; then . '/tmp/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/tmp/google-cloud-sdk/completion.bash.inc' ]; then . '/tmp/google-cloud-sdk/completion.bash.inc'; fi

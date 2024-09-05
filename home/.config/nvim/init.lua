@@ -1,6 +1,5 @@
 require("core.settings")
 require("core.mappings")
--- require("core.lazy")
 
 --[[
 -- Setup initial configuration,
@@ -31,3 +30,4 @@ require("lazy").setup({ import = "plugins" }, {
     notify = false,
   },
 })
+
