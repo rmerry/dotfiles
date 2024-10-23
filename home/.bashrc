@@ -34,9 +34,7 @@ fi
 # PATH #
 ########
 
-export PATH=$PATH:$HOME/scripts # Personal scripts
-export PATH=$HOME/local/bin:$PATH
-export PATH=$PATH:$HOME/bin 
+export PATH=$HOME/.local/bin:$PATH
 
 ###################################################
 # APPLICATION INSTALL LOCATIONS (CUSTOM PREFIXES) #
@@ -195,27 +193,38 @@ if command -v rbenv &>/dev/null; then
 	eval "$(rbenv init -)"
 fi
 
-# Rust
-if command -v rustc &> /dev/null; then
-	export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
-	export PATH="$HOME/.cargo/bin:$PATH" # Rust package manager
-fi
-if [ -f "$HOME/.cargo/env" ]; then
-	source "$HOME/.cargo/env"
-fi
 
 #############
 # UTILITIES #
 #############
 
+# brew
+if  command  -v /opt/homebrew/bin/brew &> /dev/null; then
+	eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # direnv
-if command -v direnv &> /dev/null; then
+if ! command -v direnv &> /dev/null; then
+	echo "direnv not found, skipping initialisation..."
+else 
 	eval "$(direnv hook bash)"
 fi
 
-if command  -v /opt/homebrew/bin/brew &> /dev/null; then
-	eval "$(/opt/homebrew/bin/brew shellenv)"
+# zoxide
+if ! command -v zoxide &> /dev/null; then
+	echo "zoxide not found, skipping initialisation..."
+else 
+	eval "$(zoxide init bash)"
+	alias cd=z
 fi
+
+# fzf
+if ! command -v fzf &> /dev/null; then
+	echo "fzf not found, skipping initialisation..."
+else 
+	eval "$(fzf --bash)"
+fi
+
 
 ################################
 # LEAVE THIS AS THE LAST LINE! #
@@ -226,16 +235,7 @@ if [ -f "$HOME/.bash_work" ]; then
 	source "$HOME/.bash_work"
 fi
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-if command -v cargo &> /dev/null; then
-	source "$HOME/.cargo/env"
-fi
-
-if command -v zoxide &> /dev/null; then
-	eval "$(zoxide init bash)"
-	alias cd="z"
-fi
 
 ############
 # STARSHIP #
