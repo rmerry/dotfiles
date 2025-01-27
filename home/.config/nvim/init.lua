@@ -228,21 +228,28 @@ require("lazy").setup({
 		config = function()
 			local ui = require("harpoon.ui")
 			local mark = require("harpoon.mark")
+			local wk = require("which-key")
 
-			vim.keymap.set("n", "<leader>a", mark.add_file)
-			vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
-			vim.keymap.set("n", "<C-h>", function()
+			wk.add({
+				{ "<leader>h", group = "𓐬 HARPOON" },
+			})
+
+			vim.keymap.set("n", "<Leader>ha", mark.add_file, { desc = "𓐬 HARPOON (a)dd" })
+			vim.keymap.set("n", "<Leader>hm", ui.toggle_quick_menu, { desc = "𓐬 HARPOON (m)enu" })
+			vim.keymap.set("n", "<Leader>hn", ui.nav_next, { desc = "𓐬 HARPOON (n)next file" })
+			vim.keymap.set("n", "<Leader>hp", ui.nav_prev, { desc = "𓐬 HARPOON (p)revious file" })
+			vim.keymap.set("n", "<Leader>h1", function()
 				ui.nav_file(1)
-			end)
-			vim.keymap.set("n", "<C-t>", function()
+			end, { desc = "𓐬 HARPOON (1)st file" })
+			vim.keymap.set("n", "<Leader>h2", function()
 				ui.nav_file(2)
-			end)
-			vim.keymap.set("n", "<C-n>", function()
+			end, { desc = "𓐬 HARPOON (2)nd file" })
+			vim.keymap.set("n", "<Leader>h3", function()
 				ui.nav_file(3)
-			end)
-			vim.keymap.set("n", "<C-s>", function()
+			end, { desc = "𓐬 HARPOON (3)rd file" })
+			vim.keymap.set("n", "<Leader>h4", function()
 				ui.nav_file(4)
-			end)
+			end, { desc = "𓐬 HARPOON (4)th file" })
 		end,
 	},
 
@@ -266,10 +273,10 @@ require("lazy").setup({
 		},
 		config = function()
 			require("neodev").setup({
-				-- library = {
-				--   plugins = { "nvim-dap-ui" },
-				--   types = true,
-				-- },
+				library = {
+					plugins = { "nvim-dap-ui" },
+					types = true,
+				},
 			})
 
 			local capabilities = nil
@@ -423,12 +430,6 @@ require("lazy").setup({
 					if disable_semantic_tokens[filetype] then
 						client.server_capabilities.semanticTokensProvider = nil
 					end
-
-					-- If which-key is in us, reload it to pick up new key combinations
-					local status_ok, _ = pcall(require, "which-key")
-					if status_ok then
-						vim.cmd("Lazy reload which-key.nvim")
-					end
 				end,
 			})
 
@@ -472,6 +473,12 @@ require("lazy").setup({
 		config = function()
 			local telescope = require("telescope")
 
+			local wk = require("which-key")
+
+			wk.add({
+				{ "<leader>f", group = "🔭 TELESCOPE" },
+			})
+
 			telescope.setup({
 				defaults = {
 					mappings = {
@@ -483,11 +490,11 @@ require("lazy").setup({
 				},
 			})
 
-			-- File pickers
+			-- Key bindings.
 			vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files, { desc = "Find FILES" })
 			vim.keymap.set("n", "<leader>fg", require("telescope.builtin").git_files, { desc = "Find (GIT) files" })
 			vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "Find BUFFERS" })
-			vim.keymap.set("n", "<leader>fr", require("telescope.builtin").oldfiles, { desc = "Find RECENT Files" })
+			vim.keymap.set("n", "<leader>fM", require("telescope.builtin").oldfiles, { desc = "Find RECENT Files" })
 			vim.keymap.set("n", "<leader>fm", require("telescope.builtin").man_pages, { desc = "Find MAN page" })
 			vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags, { desc = "Find HELP" })
 			vim.keymap.set(
@@ -500,40 +507,40 @@ require("lazy").setup({
 				"n",
 				"<leader>fS",
 				require("telescope.builtin").lsp_dynamic_workspace_symbols,
-				{ desc = "Find (S)YMBOLS" }
+				{ desc = "Find (S)ymbols" }
 			)
 			vim.keymap.set("n", "<leader>fs", require("telescope.builtin").live_grep, { desc = "Find (s)TRING" })
 
 			-- LSP pickers
 			vim.keymap.set(
 				"n",
-				"<leader>rc",
+				"<leader>fc",
 				require("telescope.builtin").lsp_references,
-				{ desc = "Reference string under cursor" }
+				{ desc = "Find reference to string under (c)ursor" }
 			)
 			vim.keymap.set(
 				"n",
-				"<leader>ri",
+				"<leader>fr",
 				require("telescope.builtin").lsp_incoming_calls,
-				{ desc = "References incomming calls string under cursor" }
+				{ desc = "Find (r)eferences incomming calls string under cursor" }
 			)
 			vim.keymap.set(
 				"n",
-				"<leader>ro",
+				"<leader>fo",
 				require("telescope.builtin").lsp_outgoing_calls,
-				{ desc = "References outgoing calls string under cursor" }
+				{ desc = "Find references to (o)utgoing calls of string under cursor" }
 			)
 			vim.keymap.set(
 				"n",
 				"<leader>rd",
 				require("telescope.builtin").lsp_document_symbols,
-				{ desc = "References DOCUMENT grep" }
+				{ desc = "Find (d)ocument symbols grep" }
 			)
 			vim.keymap.set(
 				"n",
-				"<leader>ra",
+				"<leader>fa",
 				require("telescope.builtin").lsp_workspace_symbols,
-				{ desc = "References ALL grep" }
+				{ desc = "Find (a)ll references" }
 			)
 			-- vim.keymap.set(
 			-- 	"n",
@@ -623,101 +630,29 @@ require("lazy").setup({
 		"tpope/vim-commentary",
 	},
 
+	-----------PLUGIN: VIM-UNIMPARED------------
+	---
+	{
+		"tpope/vim-unimpaired",
+	},
+
 	-----------PLUGIN: WHICH-KEY.NVIM------------
 	---
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
-		init = function()
-			vim.o.timeout = true
-			vim.o.timeoutlen = 300
-		end,
 		opts = {
-			plugins = {
-				marks = true, -- shows a list of your marks on ' and `
-				registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
-				-- the presets plugin, adds help for a bunch of default keybindings in Neovim
-				-- No actual key bindings are created
-				spelling = {
-					enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
-					suggestions = 20, -- how many suggestions should be shown in the list?
-				},
-				presets = {
-					operators = true, -- adds help for operators like d, y, ...
-					motions = true, -- adds help for motions
-					text_objects = true, -- help for text objects triggered after entering an operator
-					windows = true, -- default bindings on <c-w>
-					nav = true, -- misc bindings to work with windows
-					z = true, -- bindings for folds, spelling and others prefixed with z
-					g = true, -- bindings for prefixed with g
-				},
-			},
-			-- add operators that will trigger motion and text object completion
-			-- to enable all native operators, set the preset / operators plugin above
-			operators = { gc = "Comments" },
-			key_labels = {
-				-- override the label used to display some keys. It doesn't effect WK in any other way.
-				-- For example:
-				-- ["<space>"] = "SPC",
-				-- ["<cr>"] = "RET",
-				-- ["<tab>"] = "TAB",
-			},
-			motions = {
-				count = true,
-			},
-			icons = {
-				breadcrumb = "»", -- symbol used in the command line area that shows your active key combo
-				separator = "➜", -- symbol used between a key and it's label
-				group = "+", -- symbol prepended to a group
-			},
-			popup_mappings = {
-				scroll_down = "<c-d>", -- binding to scroll down inside the popup
-				scroll_up = "<c-u>", -- binding to scroll up inside the popup
-			},
-			window = {
-				border = "none", -- none, single, double, shadow
-				position = "bottom", -- bottom, top
-				margin = { 1, 0, 1, 0 }, -- extra window margin [top, right, bottom, left]. When between 0 and 1, will be treated as a percentage of the screen size.
-				padding = { 1, 2, 1, 2 }, -- extra window padding [top, right, bottom, left]
-				winblend = 0, -- value between 0-100 0 for fully opaque and 100 for fully transparent
-				zindex = 1000, -- positive value to position WhichKey above other floating windows.
-			},
-			layout = {
-				height = { min = 4, max = 25 }, -- min and max height of the columns
-				width = { min = 20, max = 50 }, -- min and max width of the columns
-				spacing = 3, -- spacing between columns
-				align = "left", -- align columns left, center or right
-			},
-			ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
-			hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "^:", "^ ", "^call ", "^lua " }, -- hide mapping boilerplate
-			show_help = true, -- show a help message in the command line for using WhichKey
-			show_keys = true, -- show the currently pressed key and its label as a message in the command line
-			triggers = "auto", -- automatically setup triggers
-			-- triggers = {"<leader>"} -- or specifiy a list manually
-			-- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
-			triggers_nowait = {
-				-- marks
-				"`",
-				"'",
-				"g`",
-				"g'",
-				-- registers
-				'"',
-				"<c-r>",
-				-- spelling
-				"z=",
-			},
-			triggers_blacklist = {
-				-- list of mode / prefixes that should never be hooked by WhichKey
-				-- this is mostly relevant for keymaps that start with a native binding
-				i = { "j", "k" },
-				v = { "j", "k" },
-			},
-			-- disable the WhichKey popup for certain buf types and file types.
-			-- Disabled by default for Telescope
-			disable = {
-				buftypes = {},
-				filetypes = {},
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+		},
+		keys = {
+			{
+				"<leader>?",
+				function()
+					require("which-key").show({ global = false })
+				end,
+				desc = "Buffer Local Keymaps (which-key)",
 			},
 		},
 	},
@@ -830,4 +765,9 @@ require("lazy").setup({
 			},
 		},
 	},
+
+	-- Debug Adapter Protocol (DAP) plugins
+	"mfussenegger/nvim-dap",
+	"rcarriga/nvim-dap-ui",
+	"theHamsta/nvim-dap-virtual-text",
 }) -- END OF LAZY SETUP
