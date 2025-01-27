@@ -1,7 +1,48 @@
+# Bash [ -x ... ] Cheatsheet: Common Test Operators
+# -----------------------------------------------
+# File-related tests:
+# [ -e FILE ]   -> True if FILE exists (any type: file, directory, etc.).
+# [ -f FILE ]   -> True if FILE exists and is a regular file (not a directory).
+# [ -d FILE ]   -> True if FILE exists and is a directory.
+# [ -r FILE ]   -> True if FILE exists and is readable.
+# [ -w FILE ]   -> True if FILE exists and is writable.
+# [ -x FILE ]   -> True if FILE exists and is executable.
+# [ -s FILE ]   -> True if FILE exists and is not empty.
+# [ FILE1 -nt FILE2 ] -> True if FILE1 is newer than FILE2 (based on modification time).
+# [ FILE1 -ot FILE2 ] -> True if FILE1 is older than FILE2.
+# [ FILE1 -ef FILE2 ] -> True if FILE1 and FILE2 refer to the same file (hard link).
+
+# String-related tests:
+# [ -z STRING ]  -> True if STRING is empty.
+# [ -n STRING ]  -> True if STRING is not empty.
+# [ STRING1 = STRING2 ]  -> True if STRING1 is equal to STRING2.
+# [ STRING1 != STRING2 ] -> True if STRING1 is not equal to STRING2.
+
+# Numeric-related tests:
+# [ NUM1 -eq NUM2 ] -> True if NUM1 is equal to NUM2.
+# [ NUM1 -ne NUM2 ] -> True if NUM1 is not equal to NUM2.
+# [ NUM1 -lt NUM2 ] -> True if NUM1 is less than NUM2.
+# [ NUM1 -le NUM2 ] -> True if NUM1 is less than or equal to NUM2.
+# [ NUM1 -gt NUM2 ] -> True if NUM1 is greater than NUM2.
+# [ NUM1 -ge NUM2 ] -> True if NUM1 is greater than or equal to NUM2.
+
+# Logical operators:
+# [ ! EXPR ]     -> True if EXPR is false (logical NOT).
+# [ EXPR1 -a EXPR2 ] -> True if both EXPR1 and EXPR2 are true (logical AND). **Deprecated**
+# [ EXPR1 -o EXPR2 ] -> True if either EXPR1 or EXPR2 is true (logical OR). **Deprecated**
+# Use `[[ EXPR1 && EXPR2 ]]` or `[[ EXPR1 || EXPR2 ]]` for modern logical operations.
+
+# Example Usage:
+# if [ -x /usr/bin/bash ]; then
+#   echo "Bash is executable"
+# fi
+#
+
 # Exit if shell is not interactive
 if [ -z "$PS1" ]; then
 	return 
 fi
+
 
 ########################
 #     CORE CONFIG      #
@@ -166,6 +207,7 @@ fi
 
 # Go
 export GOPATH=$HOME/go/
+export GOBIN=$GOPATH/bin
 export PATH="$GOPATH/bin:$PATH"
 
 # zig
@@ -225,6 +267,23 @@ else
 	eval "$(fzf --bash)"
 fi
 
+########################
+#       DOT FILES      #
+########################
+export DOT_FILES_DIR="~/code/mine/dotfiles"
+
+if [ -d $DOT_FILES_DIR ]; then
+	# Check for uncommitted changes in the DOT_FILES_DIR
+	if [[ -n "$(git -C "$DOT_FILES_DIR" status --porcelain)" ]]; then
+	  echo "Uncommitted dot file changes..."
+	fi
+fi
+
+############
+# STARSHIP #
+############
+
+eval "$(starship init bash)"
 
 ################################
 # LEAVE THIS AS THE LAST LINE! #
@@ -234,11 +293,3 @@ fi
 if [ -f "$HOME/.bash_work" ]; then 
 	source "$HOME/.bash_work"
 fi
-
-
-
-############
-# STARSHIP #
-############
-
-eval "$(starship init bash)"
