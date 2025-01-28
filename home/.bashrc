@@ -77,6 +77,13 @@ fi
 
 export PATH=$HOME/.local/bin:$PATH
 
+# Add all bin folders under ~/.local/share/<application>/bin to PATH
+for bin_dir in ~/.local/share/*/bin; do
+    if [ -d "$bin_dir" ]; then
+        PATH="$bin_dir:$PATH"
+    fi
+done
+
 ###################################################
 # APPLICATION INSTALL LOCATIONS (CUSTOM PREFIXES) #
 ###################################################
@@ -172,7 +179,9 @@ fi
 # FUNCTION DEFINITIONS #
 ########################
 
-
+function whatsmyip() {
+	curl -s https://ipinfo.io | jq
+}
 
 ###################
 # CUSTOM BINDINGS #
