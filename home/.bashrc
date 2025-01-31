@@ -101,6 +101,8 @@ export LESS="-i" # makes less' seearch feature case insensitive
 #   GLOBAL VARIABLES   #
 ########################
 
+export DOT_FILES_DIR="${HOME}/code/mine/dotfiles"
+
 # Don't set the TERM variable when using TMUX: use .tmux.conf instead
 if [ "$TMUX" = "" ]; then
 	export TERM="xterm-256color"
@@ -162,6 +164,38 @@ fi
 
 function whatsmyip() {
 	curl -s https://ipinfo.io | jq
+}
+
+function check_dotfile_changes() {
+	if [ -z "$DOT_FILES_DIR" ]  ; then
+		echo 1
+		return
+	fi
+	if [ ! -d "$DOT_FILES_DIR" ]; then
+		return
+	fi
+
+	cd "$DOT_FILES_DIR"
+
+    # Fetch latest changes from origin
+    git fetch origin
+
+    # Get the number of commits ahead and behind
+    read ahead behind < <(git rev-list --left-right --count HEAD...origin/master)
+
+    # Check if we are ahead
+    if [[ "$ahead" -gt 0 ]]; then
+        echo "🚀 You have unpushed dotfile changes!"
+    fi
+
+    # Check if we are behind
+    if [[ "$behind" -gt 0 ]]; then
+        echo "⚠️  Your dotfiles are outdated, pull the latest!"
+    fi
+
+	if [[ -n "$(git diff)" ]]; then
+		echo "👷🏼 You have uncommitted dotfile changes."
+	fi
 }
 
 ###################
@@ -257,17 +291,13 @@ else
 	eval "$(fzf --bash)"
 fi
 
-########################
-#       DOT FILES      #
-########################
-export DOT_FILES_DIR="~/code/mine/dotfiles"
+#####################
+#       CHECKS      #
+#####################
+check_dotfile_changes
 
-if [ -d $DOT_FILES_DIR ]; then
-	# Check for uncommitted changes in the DOT_FILES_DIR
-	if [[ -n "$(git -C "$DOT_FILES_DIR" status --porcelain)" ]]; then
-	  echo "Uncommitted dot file changes..."
-	fi
-fi
+
+
 
 ############
 # STARSHIP #
