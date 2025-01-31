@@ -101,25 +101,6 @@ export LESS="-i" # makes less' seearch feature case insensitive
 #   GLOBAL VARIABLES   #
 ########################
 
-if command -v tput &> /dev/null; then
-
-	# Colours
-	RED=$(tput setaf 1)
-	GREEN=$(tput setaf 2)
-	YELLOW=$(tput setaf 3)
-	WHITE=$(tput setaf 7)
-
-	# Styles
-	BOLD=$(tput bold)
-	NORMAL=$(tput sgr0)
-	DIM=$(tput dim)
-	ITALIC=$(tput sitm)
-
-else
-	echo "Warning: tput is not installed! Using basic mono-colour prompt."
-fi
-
-
 # Don't set the TERM variable when using TMUX: use .tmux.conf instead
 if [ "$TMUX" = "" ]; then
 	export TERM="xterm-256color"
