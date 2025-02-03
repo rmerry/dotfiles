@@ -66,10 +66,6 @@ shopt -s globstar     # The '**' glob matches all files and zero or more [sub]di
 # Prevent ctrl+s/ctrl+q behaviour
 stty -ixon
 
-# Make less more friendly for non-text input files, see lesspipe(1)
-if command -v lesspipe &> /dev/null; then
-	eval "$(lesspipe)"
-fi
 
 ########
 # PATH #
@@ -126,7 +122,6 @@ alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
 alias tmux='tmux -2' # Start in 256 colour mode
 alias rg="rg --ignore-case --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:green' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold'"
 alias cdvc="cd /home/richard/.config/nvim/"
-alias rg="rg --hidden"
 alias irssi="irssi --config=<((cat $HOME/.irssi/server_config && cat $HOME/.irssi/config))"
 
 # fzf shortcuts
@@ -190,11 +185,61 @@ function check_dotfile_changes() {
 
     # Check if we are behind
     if [[ "$behind" -gt 0 ]]; then
-        echo "⚠️  Your dotfiles are outdated, pull the latest!"
+        echo "⚠️ Your dotfiles are outdated, pull the latest!"
     fi
 
 	if [[ -n "$(git diff)" ]]; then
 		echo "👷🏼 You have uncommitted dotfile changes."
+	fi
+}
+
+function healthcheck() {
+	commands=(
+		"curl"
+		"direnv"
+		"fzf"
+		"git"
+		"go"
+		"jq"
+		"make"
+		"node"
+		"npm"
+		"nvim"
+		"pip"
+		"python"
+		"rg"
+		"ssh"
+		"starship"
+		"tmux"
+		"wget"
+		"zoxide"
+	)
+
+	# Loop through the array and check if each command is executable.
+	for cmd in "${commands[@]}"; do
+		if command -v "$cmd" >/dev/null 2>&1; then
+			echo "✅ $cmd"
+		else
+			echo "❌ $cmd"
+		fi
+	done
+}
+
+# smart_eval works like eval except it checks that the command exists before
+# attempting to eval it; if it does not exist it prints a friendly message.
+# #
+# example usage: smart_eval "fzf --bash"
+function smart_eval() {
+	if [[ -z "$1" ]]; then
+		echo "Usage: smart_eval <cmd>"
+		return 1
+	fi
+
+	local cmd=${1%% *}
+	if ! command -v $cmd &> /dev/null; then
+		echo "smart_eval(): $cmd not found, skipping..."
+	else 
+		eval "$($1)"
 	fi
 }
 
@@ -253,57 +298,27 @@ if command -v pyenv &>/dev/null; then
 	eval "$(pyenv init -)"
 fi
 
-# Ruby
-if command -v rbenv &>/dev/null; then
-	export PATH="$HOME/.rbenv/bin:$PATH"
-	eval "$(rbenv init -)"
-fi
-
-
 #############
 # UTILITIES #
 #############
 
-# brew
-if  command  -v /opt/homebrew/bin/brew &> /dev/null; then
-	eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+smart_eval "direnv hook bash"
+smart_eval "zoxide init bash"
+smart_eval "fzf --bash"
+smart_eval "lesspipe"
+smart_eval "starship init bash"
 
-# direnv
-if ! command -v direnv &> /dev/null; then
-	echo "direnv not found, skipping initialisation..."
-else 
-	eval "$(direnv hook bash)"
-fi
-
-# zoxide
-if ! command -v zoxide &> /dev/null; then
-	echo "zoxide not found, skipping initialisation..."
-else 
-	eval "$(zoxide init bash)"
-	alias cd=z
-fi
-
-# fzf
-if ! command -v fzf &> /dev/null; then
-	echo "fzf not found, skipping initialisation..."
-else 
-	eval "$(fzf --bash)"
+####################
+#       MACOS      #
+####################
+if [[ "$(uname)" == "Darwin" ]]; then
+	smart_eval "/opt/homebrew/bin/brew shellenv"
 fi
 
 #####################
 #       CHECKS      #
 #####################
 check_dotfile_changes
-
-
-
-
-############
-# STARSHIP #
-############
-
-eval "$(starship init bash)"
 
 ################################
 # LEAVE THIS AS THE LAST LINE! #
