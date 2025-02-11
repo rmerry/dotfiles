@@ -308,6 +308,10 @@ smart_eval "fzf --bash"
 smart_eval "lesspipe"
 smart_eval "starship init bash"
 
+if command -v z &> /dev/null; then
+	alias cd="z"
+fi
+
 ####################
 #       MACOS      #
 ####################
