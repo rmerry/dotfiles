@@ -193,7 +193,7 @@ function check_dotfile_changes() {
 	fi
 }
 
-function healthcheck() {
+function checkhealth() {
 	commands=(
 		"curl"
 		"direnv"
