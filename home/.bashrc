@@ -43,6 +43,10 @@ if [ -z "$PS1" ]; then
 	return 
 fi
 
+# Source .profile if it exists
+if [ -r ~/.profile ]; then
+    source ~/.profile
+fi
 
 ########################
 #     CORE CONFIG      #
@@ -66,27 +70,6 @@ shopt -s globstar     # The '**' glob matches all files and zero or more [sub]di
 # Prevent ctrl+s/ctrl+q behaviour
 stty -ixon
 
-
-########
-# PATH #
-########
-
-export PATH=$HOME/.local/bin:$PATH
-
-# Add all bin folders under ~/.local/share/<application>/bin to PATH
-for bin_dir in ~/.local/share/*/bin; do
-    if [ -d "$bin_dir" ]; then
-        PATH="$bin_dir:$PATH"
-    fi
-done
-
-###################################################
-# APPLICATION INSTALL LOCATIONS (CUSTOM PREFIXES) #
-###################################################
-
-export PATH=$HOME/local/nvim/bin:$PATH
-export PATH=$HOME/local/go/bin:$PATH
-
 ######################
 # CORE UTILS CONFIGS #
 ######################
@@ -97,7 +80,6 @@ export LESS="-i" # makes less' seearch feature case insensitive
 #   GLOBAL VARIABLES   #
 ########################
 
-export DOT_FILES_DIR="${HOME}/code/mine/dotfiles"
 
 # Don't set the TERM variable when using TMUX: use .tmux.conf instead
 if [ "$TMUX" = "" ]; then
@@ -118,7 +100,7 @@ alias lss='ls -lahrS'
 alias lst='ls -lahrt'
 # alias open='xdg-open'
 alias rot13="tr '[A-Za-z]' '[N-ZA-Mn-za-m]'"
-alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
+# alias task='ssh -t -p 65222 bitsociety.duckdns.org task'
 alias tmux='tmux -2' # Start in 256 colour mode
 alias rg="rg --ignore-case --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:green' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold'"
 alias cdvc="cd /home/richard/.config/nvim/"
@@ -170,6 +152,7 @@ function check_dotfile_changes() {
 		return
 	fi
 
+	local cwd="$(pwd)"
 	cd "$DOT_FILES_DIR"
 
     # Fetch latest changes from origin
@@ -191,6 +174,8 @@ function check_dotfile_changes() {
 	if [[ -n "$(git diff)" ]]; then
 		echo "👷🏼 You have uncommitted dotfile changes."
 	fi
+
+	cd "$cwd"
 }
 
 function checkhealth() {
@@ -207,6 +192,7 @@ function checkhealth() {
 		"nvim"
 		"pip"
 		"python"
+		"pyenv"
 		"rg"
 		"ssh"
 		"starship"
@@ -270,44 +256,20 @@ if ! shopt -oq posix; then
 	fi
 fi
 
-#########################################
-#         PROGRAMMING LANGUAGES         #
-#########################################
-
-# Go
-export GOPATH=$HOME/go/
-export GOBIN=$GOPATH/bin
-export PATH="$GOPATH/bin:$PATH"
-
-# zig
-export PATH=$PATH:/usr/local/zig/
-
-# NodeJS
-export NPM_BIN_DIR="/usr/local/lib/nodejs/bin"
-
-export PATH="$NPM_BIN_DIR:$PATH"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# Python
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv &>/dev/null; then
-	eval "$(pyenv init -)"
-fi
+source ~/.git-completion.bash
 
 #############
 # UTILITIES #
 #############
 
 smart_eval "direnv hook bash"
-smart_eval "zoxide init bash"
 smart_eval "fzf --bash"
 smart_eval "lesspipe"
 smart_eval "starship init bash"
+smart_eval "pyenv init -"
 
+# Zoxide
+smart_eval "zoxide init bash"
 if command -v z &> /dev/null; then
 	alias cd="z"
 fi
