@@ -1,6 +1,7 @@
 [core]
 	excludesfile = ~/.gitignore_global
 	pager = delta
+	editor = nvim
 
 [alias]
 	br = branch
@@ -20,6 +21,8 @@
 
 [delta]
 	navigate = true  # use n and N to move between diff sections
+	syntax-theme = gruvbox-light
+	line-numbers = true
 
 [merge]
 	conflictstyle = diff3
@@ -42,3 +45,8 @@
 
 [include]
 	path = .gitconfig_local
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[user]
+	email = 3913406+rmerry@users.noreply.github.com
+	name = Richard Merry
