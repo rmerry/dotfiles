@@ -43,11 +43,6 @@ if [ -z "$PS1" ]; then
 	return 
 fi
 
-# Source .profile if it exists
-if [ -r ~/.profile ]; then
-    source ~/.profile
-fi
-
 ########################
 #     CORE CONFIG      #
 ########################
@@ -69,6 +64,103 @@ shopt -s globstar     # The '**' glob matches all files and zero or more [sub]di
 
 # Prevent ctrl+s/ctrl+q behaviour
 stty -ixon
+
+#######
+# SSH #
+#######
+
+# Ensure agent is running
+ssh-add -l &>/dev/null
+if [ "$?" == 2 ]; then
+    # Could not open a connection to your authentication agent.
+
+    # Load stored agent connection info.
+    test -r ~/.ssh-agent && \
+        eval "$(<~/.ssh-agent)" >/dev/null
+
+    ssh-add -l &>/dev/null
+    if [ "$?" == 2 ]; then
+        # Start agent and store agent connection info.
+        (umask 066; ssh-agent > ~/.ssh-agent)
+        eval "$(<~/.ssh-agent)" >/dev/null
+    fi
+fi
+
+# Load identities if none are loaded
+ssh-add -l &>/dev/null
+if [ "$?" == 1 ]; then
+    # The agent has no identities. Add all private keys in ~/.ssh.
+    for key in ~/.ssh/id_*; do
+        # Skip public keys
+        [[ "$key" == *.pub ]] && continue
+
+        # Add key if it's a regular file and readable
+        if [[ -f "$key" && -r "$key" ]]; then
+            ssh-add -t 3600 "$key" >/dev/null 2>&1
+        fi
+    done
+fi
+
+#########
+# PATHS #
+#########
+
+if [ -f $HOME/.bash_env ]; then
+	source "$HOME/.bash_env"
+fi
+
+export PATH=$HOME/local/bin:$PATH
+
+export PATH=$HOME/.local/bin:$PATH
+
+# Add all bin folders under ~/.local/share/<application>/bin to PATH
+for bin_dir in ~/.local/share/*/bin; do
+    if [ -d "$bin_dir" ]; then
+        PATH="$bin_dir:$PATH"
+    fi
+done
+
+# Add all bin folders under ~/.local/share to PATH
+for dir in ~/.local/share/*; do
+	PATH="$dir:$PATH"
+done
+
+export DOT_FILES_DIR="${HOME}/code/mine/dotfiles"
+
+# PROGRAMMING LANGUAGES PATHS      
+
+# Go
+export GOPATH=$HOME/go/
+export GOBIN=$GOPATH/bin
+export PATH="$GOPATH/bin:$PATH"
+
+# zig
+export PATH=$PATH:/usr/local/zig/
+
+# NVM (Node Version Manager)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Python
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+# Misc
+export TMPDIR=/tmp
+
+# BASH COMMAND LINE COMPLETIONS #
+
+# Bash (this is probably not necessary as usually sourced in /etc/bash.bashrc or /etc/profile)
+if ! shopt -oq posix; then
+	if [ -f /usr/share/bash-completion/bash_completion ]; then
+		source /usr/share/bash-completion/bash_completion
+	elif [ -f /etc/bash_completion ]; then
+		source /etc/bash_completion
+	elif [ -f /opt/homebrew/etc/profile.d/bash_completion.sh  ]; then
+		source /opt/homebrew/etc/profile.d/bash_completion.sh
+	fi
+fi
 
 ######################
 # CORE UTILS CONFIGS #
@@ -194,11 +286,13 @@ function checkhealth() {
 		"python"
 		"pyenv"
 		"rg"
+		"rg"
 		"ssh"
 		"starship"
 		"tmux"
 		"wget"
 		"zoxide"
+		"zig"
 	)
 
 	# Loop through the array and check if each command is executable.
@@ -229,12 +323,23 @@ function smart_eval() {
 	fi
 }
 
+function smart_eval_no_warn() {
+	if [[ -z "$1" ]]; then
+		echo "Usage: smart_eval <cmd>"
+		return 1
+	fi
+
+	local cmd=${1%% *}
+	if  command -v $cmd &> /dev/null; then
+		eval "$($1)"
+	fi
+}
+
 ###################
 # CUSTOM BINDINGS #
 ###################
 
 bind '"\C-g":"git commit -m \"\"\e[D"'
-
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/richard/Downloads/google-cloud-sdk/path.bash.inc' ]; then 
@@ -266,7 +371,7 @@ smart_eval "direnv hook bash"
 smart_eval "fzf --bash"
 smart_eval "lesspipe"
 smart_eval "starship init bash"
-smart_eval "pyenv init -"
+smart_eval_no_warn "pyenv init -"
 
 # Zoxide
 smart_eval "zoxide init bash"
@@ -294,3 +399,7 @@ check_dotfile_changes
 if [ -f "$HOME/.bash_work" ]; then 
 	source "$HOME/.bash_work"
 fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
