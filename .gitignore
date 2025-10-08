@@ -3,5 +3,7 @@ vim/.vim/.netrwhist
 vim/.vim/undo/
 irssi/.irssi/away.log
 irssi/.irssi/server_config
+home/.irssi/away.log
+home/.irssi/server_config
 home/.config/nvim/lazy-lock.json
 .gitconfig
