@@ -21,9 +21,10 @@ vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
 vim.opt.isfname:append("@-@")
 vim.opt.colorcolumn = "80"
-vim.o.clipboard = "unnamedplus" -- Sync clipboard between OS and Neovim.
+vim.opt.clipboard = "unnamedplus" -- Sync clipboard between OS and Neovim.
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
+vim.opt.background = "dark"
 
 -- CORE MAPPINGS
 --
@@ -114,13 +115,31 @@ require("lazy").setup({
 		end,
 	},
 
+	-----------PLUGIN: everforest------------
+	--
+	-- {
+	-- 	"https://github.com/sainnhe/everforest",
+	-- 	name = "everforest",
+	-- 	config = function()
+	-- 		-- ef.setup({
+	-- 		-- everforest_background = "soft",
+	-- 		-- })
+	-- 		--
+
+	-- 		vim.cmd([[ colorscheme everforest ]])
+	-- 	end,
+	-- 	priority = 1000,
+	-- },
+
+	{ "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+
 	-----------PLUGIN: ROSE-PINE.NVIM------------
 	--
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",
 		config = function()
-			vim.cmd([[ colorscheme rose-pine ]])
+			-- vim.cmd([[ colorscheme rose-pine ]])
 
 			local rp = require("rose-pine")
 
@@ -264,10 +283,8 @@ require("lazy").setup({
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 
 			{ "j-hui/fidget.nvim", opts = {} },
-
 			-- Autoformatting
 			"stevearc/conform.nvim",
-
 			-- Schema information
 			"b0o/SchemaStore.nvim",
 		},
@@ -308,6 +325,8 @@ require("lazy").setup({
 				svelte = true,
 				templ = true,
 				cssls = true,
+				zls = true,
+				csharp_ls = true,
 
 				-- Probably want to disable formatting for this lang server
 				ts_ls = true,
@@ -317,19 +336,6 @@ require("lazy").setup({
 						json = {
 							schemas = require("schemastore").json.schemas(),
 							validate = { enable = true },
-						},
-					},
-				},
-
-				pylsp = {
-					settings = {
-						pylsp = {
-							plugins = {
-								pycodestyle = {
-									ignore = { "W391" },
-									maxLineLength = 100,
-								},
-							},
 						},
 					},
 				},
@@ -472,20 +478,34 @@ require("lazy").setup({
 		lazy = false,
 		config = function()
 			local telescope = require("telescope")
+			local telescopeConfig = require("telescope.config")
 
 			local wk = require("which-key")
-
 			wk.add({
 				{ "<leader>f", group = "🔭 TELESCOPE" },
 			})
 
+			-- Clone the default Telescope configuration and change the vimgrep_argumens
+			-- variable to allow us to search in hidden files (but not in `.git/`)
+			local vimgrep_arguments = { unpack(telescopeConfig.values.vimgrep_arguments) }
+			table.insert(vimgrep_arguments, "--hidden") -- I want to search in hidden/dot files.
+			table.insert(vimgrep_arguments, "--glob")
+			table.insert(vimgrep_arguments, "!**/.git/*") -- I don't want to search in the `.git` directory.
+
 			telescope.setup({
 				defaults = {
+					vimgrep_arguments = vimgrep_arguments, -- Overwrite the vimgrep_arguments here.
 					mappings = {
 						i = {
 							["<C-u>"] = false,
 							["<C-d>"] = false,
 						},
+					},
+				},
+				pickers = {
+					find_files = {
+						-- `hidden = true` will still show inside of '.git/` as it's not in '.gitignore`
+						find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
 					},
 				},
 			})
@@ -657,6 +677,68 @@ require("lazy").setup({
 		},
 	},
 
+	-----------PLUGIN: CLAUDE-CODE.NVIM------------
+	---
+	{
+		"greggh/claude-code.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim", -- Required for git operations
+		},
+		config = function()
+			require("claude-code").setup({
+				-- Terminal window settings
+				window = {
+					split_ratio = 0.3, -- Percentage of screen for the terminal window (height for horizontal, width for vertical splits)
+					position = "botright", -- Position of the window: "botright", "topleft", "vertical", "rightbelow vsplit", etc.
+					enter_insert = true, -- Whether to enter insert mode when opening Claude Code
+					hide_numbers = true, -- Hide line numbers in the terminal window
+					hide_signcolumn = true, -- Hide the sign column in the terminal window
+				},
+				-- File refresh settings
+				refresh = {
+					enable = true, -- Enable file change detection
+					updatetime = 100, -- updatetime when Claude Code is active (milliseconds)
+					timer_interval = 1000, -- How often to check for file changes (milliseconds)
+					show_notifications = true, -- Show notification when files are reloaded
+				},
+				-- Git project settings
+				git = {
+					use_git_root = true, -- Set CWD to git root when opening Claude Code (if in git project)
+				},
+				-- Shell-specific settings
+				shell = {
+					separator = "&&", -- Command separator used in shell commands
+					pushd_cmd = "pushd", -- Command to push directory onto stack (e.g., 'pushd' for bash/zsh, 'enter' for nushell)
+					popd_cmd = "popd", -- Command to pop directory from stack (e.g., 'popd' for bash/zsh, 'exit' for nushell)
+				},
+				-- Command settings
+				command = "claude", -- Command used to launch Claude Code
+				-- Command variants
+				command_variants = {
+					-- Conversation management
+					continue = "--continue", -- Resume the most recent conversation
+					resume = "--resume", -- Display an interactive conversation picker
+
+					-- Output options
+					verbose = "--verbose", -- Enable verbose logging with full turn-by-turn output
+				},
+				-- Keymaps
+				keymaps = {
+					toggle = {
+						normal = "<C-,>", -- Normal mode keymap for toggling Claude Code, false to disable
+						terminal = "<C-,>", -- Terminal mode keymap for toggling Claude Code, false to disable
+						variants = {
+							continue = "<leader>cC", -- Normal mode keymap for Claude Code with continue flag
+							verbose = "<leader>cV", -- Normal mode keymap for Claude Code with verbose flag
+						},
+					},
+					window_navigation = true, -- Enable window navigation keymaps (<C-h/j/k/l>)
+					scrolling = true, -- Enable scrolling keymaps (<C-f/b>) for page up/down
+				},
+			})
+		end,
+	},
+
 	-----------PLUGIN: AVANTE.NVIM------------
 	---
 	{
@@ -666,51 +748,11 @@ require("lazy").setup({
 		version = false,
 		opts = {
 			provider = "openai",
-			openai = {
-				model = "gpt-4o",
-				max_tokens = 4000,
-			},
-			behaviour = {
-				auto_suggestions = false, -- Experimental stage
-				auto_set_highlight_group = true,
-				auto_set_keymaps = true,
-				auto_apply_diff_after_generation = false,
-				support_paste_from_clipboard = false,
-			},
-			hints = { enabled = true },
-			vendors = {
-				---@type AvanteSupportedProvider
-				-- ollama = {
-				-- 	["local"] = true,
-				-- 	endpoint = "http://ollama.richardmerry.uk",
-				-- 	model = "codellama",
-				-- 	parse_curl_args = function(opts, code_opts)
-				-- 		return {
-				-- 			url = opts.endpoint .. "/api/generate",
-				-- 			headers = {
-				-- 				["Accept"] = "application/json",
-				-- 				["Content-Type"] = "application/json",
-				-- 			},
-				-- 			body = {
-				-- 				model = opts.model,
-				-- 				messages = { -- you can make your own message, but this is very advanced
-				-- 					{ role = "system", content = code_opts.system_prompt },
-				-- 					{
-				-- 						role = "user",
-				-- 						content = require("avante.providers.openai").get_user_message(code_opts),
-				-- 					},
-				-- 				},
-				-- 				max_tokens = 2048,
-				-- 				stream = true,
-				-- 			},
-				-- 		}
-				-- 	end,
-				-- 	parse_response_data = function(data_stream, event_state, opts)
-				-- 		require("avante.providers").openai.parse_response(data_stream, event_state, opts)
-				-- 	end,
-				-- },
-
-				---@type AvanteProvider
+			providers = {
+				openai = {
+					model = "gpt-4o",
+					max_tokens = 4000,
+				},
 				ollama = {
 					["local"] = true,
 					endpoint = "http://ollama.richardmerry.uk/v1",
@@ -735,6 +777,14 @@ require("lazy").setup({
 					end,
 				},
 			},
+			behaviour = {
+				auto_suggestions = false, -- Experimental stage
+				auto_set_highlight_group = true,
+				auto_set_keymaps = true,
+				auto_apply_diff_after_generation = false,
+				support_paste_from_clipboard = false,
+			},
+			hints = { enabled = true },
 		},
 		build = "make",
 		dependencies = {
@@ -771,3 +821,5 @@ require("lazy").setup({
 	"rcarriga/nvim-dap-ui",
 	"theHamsta/nvim-dap-virtual-text",
 }) -- END OF LAZY SETUP
+
+vim.cmd.colorscheme("catppuccin")
