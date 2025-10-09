@@ -234,6 +234,7 @@ function checkhealth() {
 		"direnv"
 		"fzf"
 		"git"
+		"delta" # git pager
 		"go"
 		"jq"
 		"make"
@@ -251,9 +252,11 @@ function checkhealth() {
 		"wget"
 		"zoxide"
 		"zig"
+		"xclip"
+
+		# mainly for i3
 		"brightnessctl"
 		"pavucontrol"
-		"xclip"
 	)
 
 	# Loop through the array and check if each command is executable.
