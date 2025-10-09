@@ -36,6 +36,10 @@
       "rev": "42fc28ba",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
+    "nvim-web-devicons": {
+      "rev": "b8221e4",
+      "src": "https://github.com/nvim-tree/nvim-web-devicons"
+    },
     "plenary.nvim": {
       "rev": "b9fd522",
       "src": "https://github.com/nvim-lua/plenary.nvim"
@@ -64,6 +68,10 @@
     "vimgo": {
       "rev": "06ac993",
       "src": "https://github.com/fatih/vim-go.git"
+    },
+    "which-key.nvim": {
+      "rev": "b4177e3",
+      "src": "https://github.com/folke/which-key.nvim"
     }
   }
 }

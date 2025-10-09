@@ -46,7 +46,7 @@ vim.pack.add({
 	{ src = "https://github.com/hrsh7th/cmp-buffer" },
 	{ src = "https://github.com/hrsh7th/cmp-path" },
 	{ src = "https://github.com/hrsh7th/cmp-cmdline" },
-	{ src = "https://github.com/nvim-lua/plenary.nvim" },
+	{ src = "https://github.com/nvim-lua/plenary.nvim" }, -- required by telescope and more
 	{ src = "https://github.com/nvim-telescope/telescope.nvim", version = '0.1.8' },
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/fatih/vim-go.git"},
@@ -56,8 +56,50 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-unimpaired"},
 	{ src = "https://github.com/tpope/vim-fugitive"},
 	{ src = "https://github.com/ThePrimeagen/harpoon"},
+	{ src = "https://github.com/folke/which-key.nvim"},
+	{ src = "https://github.com/nvim-tree/nvim-web-devicons"}, -- used by telescope(optional), which-key (optional)
 })
-	
+
+-- KEYBINDINGS via Which-Key
+-- 
+local wk = require("which-key")
+local mark = require("harpoon.mark")
+local ui = require("harpoon.ui")
+local builtin = require("telescope.builtin")
+
+wk.add({
+	-- Harpoon
+  { "<leader>h", group = "⇁ Harpoon" },
+  { "<leader>ha", mark.add_file, desc = "(a)dd", mode = "n" },
+  { "<leader>hm", ui.toggle_quick_menu, desc = "(m)enu", mode = "n" },
+  { "<Leader>ha", mark.add_file, desc = "(a)dd" },
+  { "<Leader>hm", ui.toggle_quick_menu, desc = "(m)enu" },
+  { "<Leader>hn", ui.nav_next, desc = "(n)ext file" },
+  { "<Leader>hp", ui.nav_prev, desc = "(p)revious file" },
+  { "<Leader>h1", function() ui.nav_file(1) end, desc = "(1)st file" },
+  { "<Leader>h2", function() ui.nav_file(2) end, desc = "(2)nd file" },
+  { "<Leader>h3", function() ui.nav_file(3) end, desc = "(3)rd file" },
+  { "<Leader>h4", function() ui.nav_file(4) end, desc = "(4)th file" },
+
+	-- Telescope
+  { "<leader>f", group = "Telescope" },
+  { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find (f)ile", mode = "n" },
+  { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Find (b)uffers", mode = "n" },
+  { "<leader>fM", builtin.oldfiles,  desc = "Find RECENT Files" },
+  { "<leader>fm", builtin.man_pages,  desc = "Find MAN page" },
+  { "<leader>fh", builtin.help_tags,  desc = "Find HELP" },
+  { "<leader>fw", builtin.grep_string,  desc = "Find WORD under cursor" },
+  { "<leader>fS", builtin.lsp_dynamic_workspace_symbols,  desc = "Find (S)ymbols" },
+  { "<leader>fs", builtin.live_grep,  desc = "Find (s)TRING" },
+  { "<leader>fr", builtin.lsp_incoming_calls,  desc = "Find (r)eferences incomming calls string under cursor" },
+  { "<leader>fo", builtin.lsp_outgoing_calls,  desc = "Find references to (o)utgoing calls of string under cursor" },
+  { "<leader>rd", builtin.lsp_document_symbols,  desc = "Find (d)ocument symbols grep" },
+  { "<leader>fa", builtin.lsp_workspace_symbols,  desc = "Find (a)ll references" },
+  { "<leader>fr", builtin.lsp_references,  desc = "Find (r)references to  word under cursor" },
+  { "<leader>gd", builtin.lsp_declaration,  desc = "Goto declaration of word under cursor" },
+  { "<leader>gi", builtin.lsp_implementations,  desc = "GOTO implementation (of word under cursor)" },
+})
+
 -- PLUGIN: NVIM-CMP
 -- 
 local cmp = require'cmp'
@@ -94,25 +136,17 @@ cmp.setup.cmdline('/', {
 })
 cmp.setup.cmdline(':', {
   mapping = cmp.mapping.preset.cmdline(),
-  sources = cmp.config.sources(
-	  { { name = 'path' } }, 
-	  { { name = 'cmdline', } }
-  )
+  sources = cmp.config.sources({
+	{ name = 'path' }
+  }, {
+	{
+	  name = 'cmdline',
+	  option = {
+		ignore_cmds = {} -- default is: `ignore_cmds = { 'Man', '!' }`
+	  }
+	}
+  })
 })
-
--- PLUGIN: HARPOON
---
-local mark = require("harpoon.mark")
-local ui = require("harpoon.ui")
-
-vim.keymap.set("n", "<Leader>ha", mark.add_file, { desc = "𓐬 HARPOON (a)dd" })
-vim.keymap.set("n", "<Leader>hm", ui.toggle_quick_menu, { desc = "𓐬 HARPOON (m)enu" })
-vim.keymap.set("n", "<Leader>hn", ui.nav_next, { desc = "𓐬 HARPOON (n)ext file" })
-vim.keymap.set("n", "<Leader>hp", ui.nav_prev, { desc = "𓐬 HARPOON (p)revious file" })
-vim.keymap.set("n", "<Leader>h1", function() ui.nav_file(1) end, { desc = "𓐬 HARPOON (1)st file" })
-vim.keymap.set("n", "<Leader>h2", function() ui.nav_file(2) end, { desc = "𓐬 HARPOON (2)nd file" })
-vim.keymap.set("n", "<Leader>h3", function() ui.nav_file(3) end, { desc = "𓐬 HARPOON (3)rd file" })
-vim.keymap.set("n", "<Leader>h4", function() ui.nav_file(4) end, { desc = "𓐬 HARPOON (4)th file" })
 
 -- PLUGIN: NVIM.LSPCONFIG
 --
@@ -131,24 +165,6 @@ require('telescope').setup({
 	},
 })
 
-local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find FILES" })
-vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find BUFFERS" })
-vim.keymap.set("n", "<leader>fM", builtin.oldfiles, { desc = "Find RECENT Files" })
-vim.keymap.set("n", "<leader>fm", builtin.man_pages, { desc = "Find MAN page" })
-vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find HELP" })
-vim.keymap.set("n", "<leader>fw", builtin.grep_string, { desc = "Find WORD under cursor" })
-vim.keymap.set("n", "<leader>fS", builtin.lsp_dynamic_workspace_symbols, { desc = "Find (S)ymbols" })
-vim.keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "Find (s)TRING" })
--- vim.keymap.set("n", "<leader>fc", builtin.lsp_references, { desc = "Find reference to string under (c)ursor" })
-vim.keymap.set("n", "<leader>fr", builtin.lsp_incoming_calls, { desc = "Find (r)eferences incomming calls string under cursor" })
-vim.keymap.set("n", "<leader>fo", builtin.lsp_outgoing_calls, { desc = "Find references to (o)utgoing calls of string under cursor" })
-vim.keymap.set("n", "<leader>rd", builtin.lsp_document_symbols, { desc = "Find (d)ocument symbols grep" })
-vim.keymap.set("n", "<leader>fa", builtin.lsp_workspace_symbols, { desc = "Find (a)ll references" })
-vim.keymap.set("n", "<leader>gr", builtin.lsp_references, { desc = "Find (r)references to  word under cursor" })
--- vim.keymap.set("n", "<leader>gd", builtin.lsp_declaration, { desc = "Goto declaration of word under cursor" })
-vim.keymap.set("n", "<leader>gi", builtin.lsp_implementations, { desc = "GOTO implementation (of word under cursor)" })
-
 -- PLUGIN: NVIM-TREESITTER
 --
 require'nvim-treesitter.configs'.setup {
@@ -158,11 +174,6 @@ require'nvim-treesitter.configs'.setup {
 
   highlight = {
     enable = true,
-
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
   }
 }
