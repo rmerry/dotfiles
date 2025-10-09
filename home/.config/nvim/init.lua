@@ -141,18 +141,13 @@ vim.keymap.set("n", "<leader>fw", builtin.grep_string, { desc = "Find WORD under
 vim.keymap.set("n", "<leader>fS", builtin.lsp_dynamic_workspace_symbols, { desc = "Find (S)ymbols" })
 vim.keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "Find (s)TRING" })
 -- vim.keymap.set("n", "<leader>fc", builtin.lsp_references, { desc = "Find reference to string under (c)ursor" })
-vim.keymap.set("n", "<leader>fR", builtin.lsp_incoming_calls, { desc = "Find (r)eferences incomming calls string under cursor" })
+vim.keymap.set("n", "<leader>fr", builtin.lsp_incoming_calls, { desc = "Find (r)eferences incomming calls string under cursor" })
 vim.keymap.set("n", "<leader>fo", builtin.lsp_outgoing_calls, { desc = "Find references to (o)utgoing calls of string under cursor" })
 vim.keymap.set("n", "<leader>rd", builtin.lsp_document_symbols, { desc = "Find (d)ocument symbols grep" })
 vim.keymap.set("n", "<leader>fa", builtin.lsp_workspace_symbols, { desc = "Find (a)ll references" })
 vim.keymap.set("n", "<leader>gr", builtin.lsp_references, { desc = "Find (r)references to  word under cursor" })
 -- vim.keymap.set("n", "<leader>gd", builtin.lsp_declaration, { desc = "Goto declaration of word under cursor" })
--- vim.keymap.set(
--- 	"n",
--- 	"<leader>gi",
--- 	builtin.lsp_implementation,
--- 	{ desc = "GOTO implementation (of word under cursor)" }
--- )
+vim.keymap.set("n", "<leader>gi", builtin.lsp_implementations, { desc = "GOTO implementation (of word under cursor)" })
 
 -- PLUGIN: NVIM-TREESITTER
 --
