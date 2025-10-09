@@ -118,6 +118,7 @@ vim.keymap.set("n", "<Leader>h4", function() ui.nav_file(4) end, { desc = "𓐬 
 --
 vim.lsp.enable('gopls')
 vim.lsp.enable('zls')
+vim.lsp.enable('csharp_ls')
 
 -- PLUGIN: TELESCOPE.NVIM
 --
