@@ -56,6 +56,10 @@ bindsym Print exec "\
     i3-nagbar --message 'Screenshot created' --type warning & \
     sleep 3; pkill i3-nagbar"
 
+# Brightness
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
 # Workspace Setup
 exec --no-startup-id i3-msg 'workspace 1; exec i3-sensible-terminal'
 exec --no-startup-id i3-msg 'workspace 2; exec google-chrome'
