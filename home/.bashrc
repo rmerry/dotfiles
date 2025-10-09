@@ -111,8 +111,6 @@ fi
 
 export PATH=$HOME/local/bin:$PATH
 
-export PATH=$HOME/.local/bin:$PATH
-
 # Add all bin folders under ~/.local/share/<application>/bin to PATH
 for bin_dir in ~/.local/share/*/bin; do
     if [ -d "$bin_dir" ]; then
@@ -121,7 +119,10 @@ for bin_dir in ~/.local/share/*/bin; do
 done
 
 # Add all bin folders under ~/.local/share to PATH
-for dir in ~/.local/share/*; do
+for dir in ~/local/*/; do
+	PATH="$dir:$PATH"
+done
+for dir in ~/local/*/bin; do
 	PATH="$dir:$PATH"
 done
 
