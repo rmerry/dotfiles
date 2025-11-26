@@ -325,7 +325,6 @@ if ! shopt -oq posix; then
 	fi
 fi
 
-source ~/.git-completion.bash
 
 #############
 # UTILITIES #

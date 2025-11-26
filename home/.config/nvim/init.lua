@@ -1,5 +1,4 @@
--- CORE SETTINGS
---
+-- CORE SETTINGS {{{
 vim.g.mapleader = " "
 vim.opt.nu = true
 vim.opt.relativenumber = true
@@ -25,9 +24,9 @@ vim.opt.clipboard = "unnamedplus" -- Sync clipboard between OS and Neovim.
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.background = "dark"
+-- }}}
 
--- CORE MAPPINGS
---
+-- CORE MAPPINGS {{{
 vim.keymap.set("n", "-", vim.cmd.Ex)
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv") -- Move highlighted blocks up and down.
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
@@ -37,6 +36,7 @@ vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("x", "<leader>p", '"_dP') -- Paste over a highlighted text without clobbering the buffer.
 
 vim.g.mapleader = ","
+-- }}}
 
 -- PLUGINS
 --
