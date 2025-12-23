@@ -62,8 +62,8 @@ bindsym Print exec "\
     sleep 3; pkill i3-nagbar"
 
 # Brightness
-bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+bindsym XF86MonBrightnessUp exec --no-startup-id /usr/bin/brightnessctl -d intel_backlight set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id /usr/bin/brightnessctl -d intel_backlight set 5%-
 
 # Workspace Setup
 exec --no-startup-id i3-msg 'workspace 1; exec i3-sensible-terminal'
