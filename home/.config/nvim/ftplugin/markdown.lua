@@ -1,7 +1,7 @@
-vim.opt.nu = false
-vim.opt.relativenumber = false
+vim.opt_local.nu = false
+vim.opt_local.relativenumber = false
 
-vim.opt.wrap = true
-vim.opt.linebreak = true
+vim.opt_local.wrap = true
+vim.opt_local.linebreak = true
 
-vim.opt.spell = true
+vim.opt_local.spell = true

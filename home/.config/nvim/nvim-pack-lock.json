@@ -16,9 +16,21 @@
       "rev": "c642487",
       "src": "https://github.com/hrsh7th/cmp-path"
     },
+    "diagram.nvim": {
+      "rev": "99f0415ac157d69e7208bc93504fb70d180d6b44",
+      "src": "https://github.com/3rd/diagram.nvim"
+    },
     "harpoon": {
       "rev": "1bc17e3",
       "src": "https://github.com/ThePrimeagen/harpoon"
+    },
+    "image.nvim": {
+      "rev": "446a8a5cc7a3eae3185ee0c697732c32a5547a0b",
+      "src": "https://github.com/3rd/image.nvim"
+    },
+    "markdown-preview.nvim": {
+      "rev": "a923f5fc5ba36a3b17e289dc35dc17f66d0548ee",
+      "src": "https://github.com/iamcco/markdown-preview.nvim"
     },
     "nvim": {
       "rev": "af58927",
@@ -43,6 +55,10 @@
     "plenary.nvim": {
       "rev": "b9fd522",
       "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "render-markdown.nvim": {
+      "rev": "ae89236e2389836cf1c3787b2b80d5d8685cc13f",
+      "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
     "telescope.nvim": {
       "rev": "b4da76b",
