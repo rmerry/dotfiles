@@ -113,7 +113,7 @@ if [ -f $HOME/.bash_env ]; then
 	source "$HOME/.bash_env"
 fi
 
-export PATH=$HOME/local/bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
 
 # Add all bin folders under ~/.local/share/<application>/bin to PATH
 for bin_dir in ~/.local/share/*/bin; do
@@ -150,6 +150,12 @@ export NVM_DIR="$HOME/.nvm"
 # Python
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
+
+# Neovim aliases
+if command -v nvim >/dev/null 2>&1; then
+	alias vim="nvim"
+	alias vi="nvim"
+fi
 
 # Misc
 export TMPDIR=/tmp
@@ -253,6 +259,8 @@ function checkhealth() {
 		"zoxide"
 		"zig"
 		"xclip"
+		"magick"
+		"mmdc" # https://github.com/mermaid-js/mermaid-cli
 
 		# mainly for i3
 		"brightnessctl"
@@ -352,7 +360,7 @@ fi
 #####################
 #       CHECKS      #
 #####################
-check_dotfile_changes
+#check_dotfile_changes
 
 ################################
 # LEAVE THIS AS THE LAST LINE! #
