@@ -47,7 +47,7 @@ vim.pack.add({
 	{ src = "https://github.com/hrsh7th/cmp-path" },
 	{ src = "https://github.com/hrsh7th/cmp-cmdline" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim" }, -- required by telescope and more
-	{ src = "https://github.com/nvim-telescope/telescope.nvim", version = '0.1.8' },
+	{ src = "https://github.com/nvim-telescope/telescope.nvim"},
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/fatih/vim-go.git"},
 	{ src = "https://github.com/catppuccin/nvim"},
@@ -62,16 +62,43 @@ vim.pack.add({
 	-- { src = "https://github.com/3rd/diagram.nvim"}, -- rendering diagrams like mermaid (integrates with image.nvim
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim"},
 	{ src = "https://github.com/iamcco/markdown-preview.nvim"},
+	{ src = "https://github.com/lewis6991/gitsigns.nvim"},
+	{ src = "https://github.com/pwntester/octo.nvim"},
+
+	-- Claude Code
+	{ src = "https://github.com/folke/snacks.nvim" },
+	{ src = "https://github.com/coder/claudecode.nvim" },
+
+	-- LuaSnip
+	{ src = "https://github.com/L3MON4D3/LuaSnip" },
+	{ src = "https://github.com/saadparwaiz1/cmp_luasnip" },
 })
+
 
 -- KEYBINDINGS via Which-Key
 -- 
-local wk = require("which-key")
-local mark = require("harpoon.mark")
-local ui = require("harpoon.ui")
 local builtin = require("telescope.builtin")
+local claudecode = require("claudecode")
+local ls = require("luasnip")
+local mark = require("harpoon.mark")
+local octo = require("octo")
+local ui = require("harpoon.ui")
+local wk = require("which-key")
+
 
 wk.add({
+  -- Claude Code
+  { "<leader>a", group = "⇁ Claude Code" },
+  { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "(c)laude toggle", mode = "n" },
+  { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "(f)ocus", mode = "n" },
+  { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "(r)esume", mode = "n" },
+  { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "(C)ontinue", mode = "n" },
+  { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "(m)odel select", mode = "n" },
+  { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "(b)uffer add", mode = "n" },
+  { "<leader>as", "<cmd>ClaudeCodeSend<cr>", desc = "(s)end selection", mode = "v" },
+  { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "(a)ccept diff", mode = "n" },
+  { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "(d)eny diff", mode = "n" },
+
 	-- Harpoon
   { "<leader>h", group = "⇁ Harpoon" },
   { "<leader>ha", mark.add_file, desc = "(a)dd", mode = "n" },
@@ -84,6 +111,14 @@ wk.add({
   { "<Leader>h2", function() ui.nav_file(2) end, desc = "(2)nd file" },
   { "<Leader>h3", function() ui.nav_file(3) end, desc = "(3)rd file" },
   { "<Leader>h4", function() ui.nav_file(4) end, desc = "(4)th file" },
+
+	-- Octo
+  { "<leader>o", group = "Octo" },
+  { "<leader>oi", "<cmd>Octo issue list<cr>", desc = "github (i)ssue list", mode = "n" },
+  { "<leader>op", "<cmd>Octo pr list<cr>", desc = "github (p)ull request list", mode = "n" },
+  { "<leader>od", "<cmd>Octo discussion list<cr>", desc = "github (d)iscussions list", mode = "n" },
+  { "<leader>on", "<cmd>Octo notification list<cr>", desc = "github (n)notifications list", mode = "n" },
+  { "<leader>os", function() require("octo.utils").create_base_search_command { include_current_repo = true } end, desc = "search github" },
 
 	-- Telescope
   { "<leader>f", group = "Telescope" },
@@ -103,6 +138,35 @@ wk.add({
   { "<leader>gd", builtin.lsp_declaration,  desc = "Goto declaration of word under cursor" },
   { "<leader>gi", builtin.lsp_implementations,  desc = "GOTO implementation (of word under cursor)" },
   { "<leader>fd", builtin.diagnostics,  desc = "Find project wide diagnostics" },
+  { "<leader>fe", function() builtin.diagnostics({ severity = vim.diagnostic.severity.ERROR }) end, desc = "Find (e)rrors" },
+})
+
+
+-- PLUGIN: LUASNIP
+-- 
+ls.config.set_config({
+  history = true,
+  updateevents = "TextChanged,TextChangedI",
+})
+require("snippets")
+
+
+-- PLUGIN: CLAUDECODE.NVIM
+-- 
+claudecode.setup({
+  cmd = "ClaudeCode",
+})
+
+-- PLUGIN: OCTO.NVIM
+-- 
+octo.setup({
+  cmd = "Octo",
+  opts = {
+    -- or "fzf-lua" or "snacks" or "default"
+    picker = "telescope",
+    -- bare Octo command opens picker of commands
+    enable_builtin = true,
+  },
 })
 
 -- PLUGIN: NVIM-CMP
@@ -110,6 +174,7 @@ wk.add({
 local cmp = require'cmp'
 cmp.setup({	
 	sources = {
+		{ name = "luasnip" },
 		{ name = "nvim_lsp" },
 		{ name = "path" },
 		{ name = "buffer" },
@@ -195,64 +260,65 @@ require('telescope').setup({
 		find_files = {
 			-- `hidden = true` will still show inside of '.git/` as it's not in '.gitignore`
 			find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+			cwd = vim.fn.getcwd(),
 		},
 	},
 })
 
 -- PLUGIN: NVIM-TREESITTER
 --
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline" },
-  sync_install = false,
-  auto_install = true,
+-- require'nvim-treesitter.configs'.setup {
+--   ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline" },
+--   sync_install = false,
+--   auto_install = true,
 
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = false,
-  }
-}
+--   highlight = {
+--     enable = true,
+--     additional_vim_regex_highlighting = false,
+--   }
+-- }
 
 -- PLUGIN: IMAGE.NVIM
 --
-require("image").setup({
-  backend = "kitty", -- or "ueberzug" or "sixel"
-  processor = "magick_cli", -- or "magick_rock"
-  integrations = {
-    markdown = {
-      enabled = true,
-      clear_in_insert_mode = false,
-      download_remote_images = true,
-      only_render_image_at_cursor = false,
-      only_render_image_at_cursor_mode = "popup", -- or "inline"
-      floating_windows = false, -- if true, images will be rendered in floating markdown windows
-      filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
-    },
-    neorg = {
-      enabled = true,
-      filetypes = { "norg" },
-    },
-    typst = {
-      enabled = true,
-      filetypes = { "typst" },
-    },
-    html = {
-      enabled = false,
-    },
-    css = {
-      enabled = false,
-    },
-  },
-  max_width = nil,
-  max_height = nil,
-  max_width_window_percentage = nil,
-  max_height_window_percentage = nil,
-  scale_factor = 1.0,
-  window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
-  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-  editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
-  tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
-  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
-})
+-- require("image").setup({
+--   backend = "kitty", -- or "ueberzug" or "sixel"
+--   processor = "magick_cli", -- or "magick_rock"
+--   integrations = {
+--     markdown = {
+--       enabled = true,
+--       clear_in_insert_mode = false,
+--       download_remote_images = true,
+--       only_render_image_at_cursor = false,
+--       only_render_image_at_cursor_mode = "popup", -- or "inline"
+--       floating_windows = false, -- if true, images will be rendered in floating markdown windows
+--       filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+--     },
+--     neorg = {
+--       enabled = true,
+--       filetypes = { "norg" },
+--     },
+--     typst = {
+--       enabled = true,
+--       filetypes = { "typst" },
+--     },
+--     html = {
+--       enabled = false,
+--     },
+--     css = {
+--       enabled = false,
+--     },
+--   },
+--   max_width = nil,
+--   max_height = nil,
+--   max_width_window_percentage = nil,
+--   max_height_window_percentage = nil,
+--   scale_factor = 1.0,
+--   window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
+--   window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
+--   editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+--   tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+--   hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
+-- })
 -- require("diagram").setup({
 --   integrations = {
 --     require("diagram.integrations.markdown"),
